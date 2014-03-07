@@ -3,8 +3,17 @@
 #include "Adafruit_GFX.h"
 #include "Adafruit_PCD8544.h"
 
-Menu::Menu(Adafruit_PCD8544* display, String* items, int itemCount) : display(display), items(items), itemCount(itemCount) {
-  activeIndex = 0;
+/*Menu::Menu(Adafruit_PCD8544* display) : display(display), items(NULL), itemCount(0), activeIndex(0) {
+
+}*/
+
+Menu::Menu(Adafruit_PCD8544* display, String* items, int itemCount) : display(display), items(items), itemCount(itemCount), activeIndex(0) {
+
+}
+
+void Menu::setItems(String* items, int itemCount) {
+  this->items = items;
+  this->itemCount = itemCount;
 }
 
 void Menu::render() {

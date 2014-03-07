@@ -38,35 +38,28 @@ int coolingTime = 2.0f * 60.0f;
 int totalTime = preheatTime + soakingTime + reflowTime + peakTime + coolingTime;
 
 // temperature profile temperatures
-int startTemp = 25; // todo internal temp
+int startTemp = 25; // TODO internal temp
 int preheatTemp = 150;
 int soakingTemp = 170;
 int reflowTemp = 250;
 int coolingTemp = startTemp;
 
-// states
-const int STATE_MAIN_MENU = 0;
-const int STATE_REFLOWING = 1;
-
 // runtime information
-int state = STATE_MAIN_MENU;
-int lastState = -1;
-int ledValue = 0;
-unsigned long lastUIRenderTime = 0;
-unsigned long startTime = 0;
-int counter = 1;
-
-// main menu state
-String mainMenuItems[] = {"Start reflow", "Pick profile", "Show profile", "Learn PID", "About"};
-int mainMenuItemCount = 5;
-
+State* state = NULL;
+State* lastState = NULL; // TODO Use stack of last states
+unsigned long lastStepTime = 0;
 String command = "";
 char commandStart = '<';
 char commandEnd = '>';
 
+int ledValue = 0; // TODO Remove
+unsigned long lastUIRenderTime = 0; // TODO Move to state
+unsigned long startTime = 0; // TODO Move to state
+int counter = 1; // TODO Move to state
+
 // choose which serial to use - "Serial" for debugging, "Serial1" for bluetooth
-//#define SERIAL Serial
-#define SERIAL Serial1
+#define SERIAL Serial
+//#define SERIAL Serial1
 
 // display renderer
 Adafruit_PCD8544 display = Adafruit_PCD8544(SCREEN_SCLK, SCREEN_MOSI, SCREEN_DC, SCREEN_SCE, SCREEN_RST);
@@ -74,8 +67,8 @@ Adafruit_PCD8544 display = Adafruit_PCD8544(SCREEN_SCLK, SCREEN_MOSI, SCREEN_DC,
 // thermocouple
 Adafruit_MAX31855 thermocouple(THRERMO_CLK, THERMO_CS, THERMO_DO);
 
-// menus
-Menu mainMenu = Menu(&display, mainMenuItems, mainMenuItemCount);
+// states
+MainMenuState mainMenuState = MainMenuState(&display);
 
 // buttons
 Button btnUp = Button(BTN_UP, btnDebounceDuration);
@@ -102,11 +95,17 @@ void setup() {
   display.clearDisplay();
   display.display();
   
+  // set starting state
+  setState(mainMenuState);
+  
   // TODO this should be set from the UI
   startTime = millis();
 }
 
 void loop() {
+  unsigned long currentTime = millis();
+  unsigned long dt = lastStepTime - currentTime;
+  
   // update buttons
   for (int i = 0; i < buttonCount; i++) {
     int duration = buttons[i].duration();
@@ -133,14 +132,8 @@ void loop() {
   }
   
   // render current state
-  switch (state) {
-    case STATE_MAIN_MENU:
-      displayMainMenuState(false);
-    break;
-    
-    case STATE_REFLOWING:
-      displayReflowingState(false);
-    break;
+  if (state != NULL) {
+    state->step(dt); 
   }
   
   // handle input
@@ -157,14 +150,22 @@ void loop() {
       command += (char)input;
     }
   }
+  
+  lastStepTime = currentTime;
+  
+  delay(100); // TODO Rem
 }
 
 void onKeyPress(int btn, unsigned long duration, boolean repeated) {
-  SERIAL.print("Pressed: ");
+  /*SERIAL.print("Pressed: ");
   SERIAL.print(btn);
-  SERIAL.println(repeated ? " repeated" : " not repeated");
+  SERIAL.println(repeated ? " repeated" : " not repeated");*/
   
-  if (state == STATE_MAIN_MENU) {
+  if (state != NULL) {
+    state->onKeyPress(btn, duration, repeated); 
+  }
+  
+  /*if (state == STATE_MAIN_MENU) {
     if (btn == BTN_UP) {
       if (mainMenu.activeIndex > 0) {
         mainMenu.activeIndex--;
@@ -184,7 +185,7 @@ void onKeyPress(int btn, unsigned long duration, boolean repeated) {
     if (btn == BTN_SELECT) {
       setLastState();
     }
-  }
+  }*/
 }
 
 void onKeyRelease(int btn, unsigned long duration) {
@@ -194,48 +195,41 @@ void onKeyRelease(int btn, unsigned long duration) {
   //SERIAL.print(duration);
   //SERIAL.println("ms");
   
-  if (state == STATE_MAIN_MENU) {
-    
+  if (state != NULL) {
+    state->onKeyRelease(btn, duration); 
   }
 }
 
 void onKeyDown(int btn) {
   //SERIAL.print("DOWN: ");
   //SERIAL.println(btn);
+  
+  if (state != NULL) {
+    state->onKeyDown(btn); 
+  }
 }
 
 void onKeyUp(int btn) {
   //SERIAL.print("UP: ");
   //SERIAL.println(btn);
+  
+  if (state != NULL) {
+    state->onKeyUp(btn); 
+  }
 }
 
-void setState(int newState) {
+void setState(State& newState) {
   lastState = state;
-  state = newState; 
+  state = &newState; 
 }
 
 void setLastState() {
-  if (lastState == -1) {
+  if (lastState == NULL) {
     return; 
   }
   
-  setState(lastState);
-  lastState = -1;
-}
-
-void displayMainMenuState(boolean force) {
-  unsigned long currentTime = millis();
-  
-  // update UI at certain interval
-  if (!force && currentTime - lastUIRenderTime < 500) {
-    return; 
-  }
-  
-  mainMenu.render();
-}
-
-void onMainMenuSelect(int index) {
-   setState(STATE_REFLOWING);
+  setState(*lastState);
+  lastState = NULL;
 }
 
 void displayReflowingState(boolean force) {
