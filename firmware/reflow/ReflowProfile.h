@@ -7,6 +7,19 @@ public:
   ReflowProfile();
   
   int getTargetTempAt(int seconds);
+  
+  int getPreheatTime();
+  int getSoakingTime();
+  int getReflowTime();
+  int getPeakTime();
+  int getCoolingTime();
+  int getTotalTime();
+  
+  int getStartTemp();
+  int getPreheatTemp();
+  int getSoakingTemp();
+  int getReflowTemp();
+  int getCoolingTemp();
 
 private:
   // temperature profile timing

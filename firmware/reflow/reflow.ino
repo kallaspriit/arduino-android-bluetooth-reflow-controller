@@ -29,9 +29,12 @@ Adafruit_PCD8544 display = Adafruit_PCD8544(SCREEN_SCLK, SCREEN_MOSI, SCREEN_DC,
 // thermocouple
 Adafruit_MAX31855 thermocouple(THRERMO_CLK, THERMO_CS, THERMO_DO);
 
+// reflow profile
+ReflowProfile profile = ReflowProfile();
+
 // states
 MainMenuState mainMenuState = MainMenuState(&display);
-ReflowState reflowState = ReflowState(&display);
+ReflowState reflowState = ReflowState(&display, &profile);
 
 // buttons
 Button btnUp = Button(BTN_UP, btnDebounceDuration);
@@ -125,7 +128,7 @@ void loop() {
     if (input == commandStart) {
       command = "";
     } else if (input == commandEnd) {
-      handle(command);
+      handleCommand(command);
 
       command = "";
     } else {
@@ -222,7 +225,7 @@ void setLastState() {
   lastState = NULL;
 }
 
-void displayReflowingState(boolean force) {
+/*void displayReflowingState(boolean force) {
   unsigned long currentTime = millis();
   
   // update UI at certain interval
@@ -257,9 +260,9 @@ void displayReflowingState(boolean force) {
   renderProgress(sensorTemp, targetTemp, duration, percentage);
   
   counter++;
-}
+}*/
 
-void renderProgress(int sensorTemp, int targetTemp, int duration, int percentage) {
+/*void renderProgress(int sensorTemp, int targetTemp, int duration, int percentage) {
   // reset
   display.clearDisplay();
   
@@ -288,12 +291,12 @@ void renderProgress(int sensorTemp, int targetTemp, int duration, int percentage
   renderProfile();
   
   // draw current temp indicator
-  /*int x = (float)percentage / 100.0f * display.width();
+  /int x = (float)percentage / 100.0f * display.width();
   int y = display.height() - 1 - sensorTemp / 4.0f;
   //display.fillCircle(x, y, 2, BLACK);
   //display.fillTriangle(x, y, x - 1, y - 1, x + 1, y - 1, BLACK);
   display.drawFastHLine(x - 2, y, 5, BLACK);
-  display.drawFastVLine(x, y - 2, 5, BLACK);*/
+  display.drawFastVLine(x, y - 2, 5, BLACK);/
   
   // draw percentage
   textX = 20;
@@ -330,112 +333,9 @@ void renderProgress(int sensorTemp, int targetTemp, int duration, int percentage
   display.print("s");
   
   display.display(); 
-}
+}*/
 
-void renderProfile() {
-  int posX = 0;
-  int posY = 17;
-  int windowWidth = display.width();
-  int windowHeight = display.height() - posY;
-  
-  float pixelsPerSecond = (float)windowWidth / (float)totalTime;
-  float pixelsPerDegree = (float)windowHeight / (float)reflowTemp;
-  
-  int startY = posY + windowHeight - 1;
-  
-  // draw graph
-  /*int x = posX;
-  int startY = posY + windowHeight - 1;
-  int dx, y1, y2;
-  
-  // calculate preheat line
-  dx = (float)preheatTime * pixelsPerSecond;
-  y1 = startY - (float)startTemp * pixelsPerDegree;
-  y2 = startY - (float)preheatTemp * pixelsPerDegree;
-  display.drawLine(x, y1, x + dx, y2, BLACK);
-  x = x + dx;
-  
-  // soaking
-  dx = (float)soakingTime * pixelsPerSecond;
-  y1 = y2;
-  y2 = startY - (float)soakingTemp * pixelsPerDegree;
-  display.drawLine(x, y1, x + dx, y2, BLACK);
-  x = x + dx;
-  
-  // reflow
-  dx = (float)reflowTime * pixelsPerSecond;
-  y1 = y2;
-  y2 = startY - (float)reflowTemp * pixelsPerDegree;
-  display.drawLine(x, y1, x + dx, y2, BLACK);
-  x = x + dx;
-  
-  // peak
-  dx = (float)peakTime * pixelsPerSecond;
-  y1 = y2;
-  y2 = startY - (float)reflowTemp * pixelsPerDegree;
-  display.drawLine(x, y1, x + dx, y2, BLACK);
-  x = x + dx;
-  
-  // cooling
-  dx = (float)coolingTime * pixelsPerSecond;
-  y1 = y2;
-  y2 = startY - (float)coolingTemp * pixelsPerDegree;
-  display.drawLine(x, y1, x + dx, y2, BLACK);
-  x = x + dx;*/
-  
-  unsigned long currentTime = millis();
-  unsigned long duration = (currentTime - startTime) / 1000;
-  
-  for (int i = 0; i < totalTime; i++) {
-    int profileTemp = getProfileTempAt(i);
-    
-    int x = posX + (float)i * pixelsPerSecond;
-    int dy = (float)profileTemp * pixelsPerDegree;
-    
-    display.drawPixel(x, startY - dy, BLACK); 
-    
-    if (i < duration) {
-      int realTemp = profileTemp; // TODO get real temp at given time
-      dy = (float)realTemp * pixelsPerDegree;
-      display.drawLine(x, startY, x, startY - dy, BLACK);
-    }
-  }
-}
-
-int getProfileTempAt(int seconds) {
-  int t1, t2;
-  float progress;
-  
-  if (seconds < preheatTime) {
-    t1 = startTemp;
-    t2 = preheatTemp;
-    progress = (float)seconds / (float)preheatTime;
-  } else if (seconds < preheatTime + soakingTime) {
-    t1 = preheatTemp;
-    t2 = soakingTemp;
-    progress = (float)(seconds - preheatTime) / (float)soakingTime;
-  } else if (seconds < preheatTime + soakingTime + reflowTime) {
-    t1 = soakingTemp;
-    t2 = reflowTemp;
-    progress = (float)(seconds - preheatTime - soakingTime) / (float)reflowTime;
-  } else if (seconds < preheatTime + soakingTime + reflowTime + peakTime) {
-    t1 = reflowTemp;
-    t2 = reflowTemp;
-    progress = (float)(seconds - preheatTime - soakingTime - reflowTime) / (float)peakTime;
-  } else {
-    t1 = reflowTemp;
-    t2 = coolingTemp;
-    progress = (float)(seconds - preheatTime - soakingTime - reflowTime - peakTime) / (float)coolingTime;
-  }
-
-  if (progress > 1.0f) {
-    return -1;
-  }
-  
-  return t1 + (float)(t2 - t1) * progress; 
-}
-
-void handle(String command) {
+void handleCommand(String command) {
   if (command == "on") {
     setLed(1);
   } else if (command == "off") {

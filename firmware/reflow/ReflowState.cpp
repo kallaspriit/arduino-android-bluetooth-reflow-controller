@@ -1,13 +1,17 @@
 #include "ReflowState.h"
 #include "Config.h"
+#include "ReflowProfile.h"
+#include "ProfileRenderer.h"
 #include "Adafruit_GFX.h"
 #include "Adafruit_PCD8544.h"
 
-ReflowState::ReflowState(Adafruit_PCD8544* display) : display(display) {}
+ReflowState::ReflowState(Adafruit_PCD8544* display, ReflowProfile* profile) : display(display), profileRenderer(display, profile) {}
 
 int ReflowState::step(float dt) {
   display->clearDisplay();
-  display->drawLine(0, 0, display->width() - 1, display->height() - 1, BLACK);
+  
+  profileRenderer.render(0, 17, display->width(), display->height() - 17, 300);
+  
   display->display();
   
   return popLastIntent();
