@@ -1,14 +1,15 @@
 #include "Button.h"
 #include "Menu.h"
+#include "Owen.h"
 #include "ReflowProfile.h"
 #include "Config.h"
 
 #include "MainMenuState.h"
 #include "ReflowState.h"
 
-#include "Adafruit_MAX31855.h"
 #include "Adafruit_GFX.h"
 #include "Adafruit_PCD8544.h"
+#include "Adafruit_MAX31855.h"
 
 // runtime information
 State* state = NULL;
@@ -26,37 +27,22 @@ int counter = 1; // TODO Move to state
 // display renderer
 Adafruit_PCD8544 display = Adafruit_PCD8544(SCREEN_SCLK, SCREEN_MOSI, SCREEN_DC, SCREEN_SCE, SCREEN_RST);
 
-// thermocouple
-Adafruit_MAX31855 thermocouple(THRERMO_CLK, THERMO_CS, THERMO_DO);
-
 // reflow profile
 ReflowProfile profile = ReflowProfile();
 
+// owen interface
+Owen owen = Owen();
+
 // states
 MainMenuState mainMenuState = MainMenuState(&display);
-ReflowState reflowState = ReflowState(&display, &profile);
+ReflowState reflowState = ReflowState(&display, &owen, &profile);
 
 // buttons
-Button btnUp = Button(BTN_UP, btnDebounceDuration);
-Button btnSelect = Button(BTN_SELECT, btnDebounceDuration);
-Button btnDown = Button(BTN_DOWN, btnDebounceDuration);
+Button btnUp = Button(BTN_UP, BTN_DEBOUNCE_DURATION);
+Button btnSelect = Button(BTN_SELECT, BTN_DEBOUNCE_DURATION);
+Button btnDown = Button(BTN_DOWN, BTN_DEBOUNCE_DURATION);
 Button buttons[] = {btnUp, btnSelect, btnDown};
 int buttonCount = 3;
-
-// temperature profile timing
-int preheatTime = 1.5f * 60.0f; // TODO use memory
-int soakingTime = 1.5f * 60.0f;
-int reflowTime = 1.0f * 60.0f;
-int peakTime = 20;
-int coolingTime = 2.0f * 60.0f;
-int totalTime = preheatTime + soakingTime + reflowTime + peakTime + coolingTime;
-
-// temperature profile temperatures
-int startTemp = 25; // TODO internal temp
-int preheatTemp = 150;
-int soakingTemp = 170;
-int reflowTemp = 250;
-int coolingTemp = startTemp;
 
 void setup() {
   // setup serial
@@ -72,7 +58,7 @@ void setup() {
   
   // setup display
   display.begin();
-  display.setContrast(50);
+  display.setContrast(45);
   display.clearDisplay();
   display.display();
   
@@ -87,16 +73,21 @@ void loop() {
   unsigned long currentTime = millis();
   float dt = (float)(currentTime - lastStepTime) / 1000.0f;
   
+  // make time move faster for testing
+  dt *= 20.0f;
+  
   // update buttons
   for (int i = 0; i < buttonCount; i++) {
     int duration = buttons[i].duration();
     boolean repeated = false;
     
-    if (buttons[i].read() == LOW && duration > btnRepeatInterval) {
-       buttons[i].rebounce(btnRepeatInterval);
+    // repeat button presses if held down
+    if (buttons[i].read() == LOW && duration > BTN_REPEAT_INTERVAL) {
+       buttons[i].rebounce(BTN_REPEAT_INTERVAL);
        repeated = true;
     }
     
+    // detect button press/release
     if (buttons[i].update()) {
       if (buttons[i].fallingEdge()) {
         onKeyPress(buttons[i].pin, duration, repeated);
@@ -105,6 +96,7 @@ void loop() {
       }
     }
     
+    // detect whether button is held down
     if (buttons[i].read() == LOW) {
       onKeyDown(buttons[i].pin);
     } else {
@@ -112,7 +104,7 @@ void loop() {
     }
   }
   
-  // render current state
+  // step active state
   if (state != NULL) {
     int intent = state->step(dt); 
     
@@ -121,14 +113,14 @@ void loop() {
     }
   }
   
-  // handle input
+  // handle serial input
   while (SERIAL.available() > 0) {
     int input = SERIAL.read();
 
     if (input == commandStart) {
       command = "";
     } else if (input == commandEnd) {
-      handleCommand(command);
+     processCommand(command);
 
       command = "";
     } else {
@@ -137,8 +129,6 @@ void loop() {
   }
   
   lastStepTime = currentTime;
-  
-  delay(100); // TODO Rem
 }
 
 void processIntent(int intent) {
@@ -149,6 +139,16 @@ void processIntent(int intent) {
   }
 }
 
+void processCommand(String command) {
+  if (command == "on") {
+    setLed(1);
+  } else if (command == "off") {
+    setLed(0);
+  }
+  
+  Serial1.println("Received: '" + command + "'");
+}
+
 void onKeyPress(int btn, unsigned long duration, boolean repeated) {
   /*SERIAL.print("Pressed: ");
   SERIAL.print(btn);
@@ -157,28 +157,6 @@ void onKeyPress(int btn, unsigned long duration, boolean repeated) {
   if (state != NULL) {
     state->onKeyPress(btn, duration, repeated); 
   }
-  
-  /*if (state == STATE_MAIN_MENU) {
-    if (btn == BTN_UP) {
-      if (mainMenu.activeIndex > 0) {
-        mainMenu.activeIndex--;
-       
-        displayMainMenuState(true);
-      }
-    } else if (btn == BTN_DOWN) {
-      if (mainMenu.activeIndex < mainMenuItemCount - 1) {
-        mainMenu.activeIndex++;
-       
-        displayMainMenuState(true);
-      }
-    } else if (btn == BTN_SELECT) {
-      onMainMenuSelect(mainMenu.activeIndex);
-    }
-  } else if (state == STATE_REFLOWING) {
-    if (btn == BTN_SELECT) {
-      setLastState();
-    }
-  }*/
 }
 
 void onKeyRelease(int btn, unsigned long duration) {
@@ -212,138 +190,24 @@ void onKeyUp(int btn) {
 }
 
 void setState(State& newState) {
+  if (state != NULL) {
+    state->onExit();
+  }
+  
+  newState.onEnter();
+  
   lastState = state;
   state = &newState;
 }
 
-void setLastState() {
+/*void setLastState() {
   if (lastState == NULL) {
     return; 
   }
   
   setState(*lastState);
   lastState = NULL;
-}
-
-/*void displayReflowingState(boolean force) {
-  unsigned long currentTime = millis();
-  
-  // update UI at certain interval
-  if (!force && currentTime - lastUIRenderTime < 500) {
-    return; 
-  }
-  
-  //ledValue = ledValue == 0 ? 1 : 0;
-  //digitalWrite(LED_PIN, ledValue);
-  
-  int internalTemp = thermocouple.readInternal();
-  int sensorTemp = thermocouple.readCelsius();
-  int duration = (currentTime - startTime) / 1000;
-  int percentage = duration * 100 / totalTime; // todo
-  int targetTemp = getProfileTempAt(duration);
-  
-  sensorTemp = targetTemp; // test
-
-  // send information over serial
-  SERIAL.print(counter);
-  SERIAL.print(". internal: ");
-  SERIAL.print(internalTemp);
-  SERIAL.print(", sensor: ");
-  SERIAL.println(sensorTemp);
-  
-  lastUIRenderTime = currentTime;
-  
-  if (btnUp.fallingEdge()) {
-    sensorTemp *= 2; 
-  }
-  
-  renderProgress(sensorTemp, targetTemp, duration, percentage);
-  
-  counter++;
 }*/
-
-/*void renderProgress(int sensorTemp, int targetTemp, int duration, int percentage) {
-  // reset
-  display.clearDisplay();
-  
-  // draw temperatures
-  int textX = 0;
-  
-  if (sensorTemp < 10) {
-    textX += 12;
-  } else if (sensorTemp < 100) {
-    textX += 6;
-  }
-  
-  if (targetTemp < 10) {
-    textX += 12;
-  } else if (targetTemp < 100) {
-    textX += 6;
-  }
-  
-  display.setTextSize(2);
-  display.setTextColor(BLACK);
-  display.setCursor(textX, 0);
-  display.print(sensorTemp);
-  display.print("/");
-  display.println(targetTemp);
-  
-  renderProfile();
-  
-  // draw current temp indicator
-  /int x = (float)percentage / 100.0f * display.width();
-  int y = display.height() - 1 - sensorTemp / 4.0f;
-  //display.fillCircle(x, y, 2, BLACK);
-  //display.fillTriangle(x, y, x - 1, y - 1, x + 1, y - 1, BLACK);
-  display.drawFastHLine(x - 2, y, 5, BLACK);
-  display.drawFastVLine(x, y - 2, 5, BLACK);/
-  
-  // draw percentage
-  textX = 20;
-  int textY = display.height() - 7;
-  int charWidth = 6;
-  int charHeight = 7;
-  int chars = 7;
-  int paddingX = 3;
-  int paddingY = 2;
-  
-  if (percentage < 10) {
-    textX += 3;
-    chars -= 1;
-  } else if (percentage > 99) {
-    textX -= 3;
-    chars += 1;
-  }
-  
-  if (duration < 10) {
-    textX += 3;
-    chars -= 1;
-  } else if (duration > 99) {
-    textX -= 3;
-    chars += 1;
-  }
-  
-  display.setTextSize(1);
-  display.setTextColor(BLACK);
-  display.fillRect(textX - paddingX, textY - paddingY, chars * charWidth + paddingX * 2, charHeight + paddingY, WHITE);
-  display.setCursor(textX, textY);
-  display.print(percentage);
-  display.print("% ");
-  display.print(duration);
-  display.print("s");
-  
-  display.display(); 
-}*/
-
-void handleCommand(String command) {
-  if (command == "on") {
-    setLed(1);
-  } else if (command == "off") {
-    setLed(0);
-  }
-  
-  Serial1.println("Received: '" + command + "'");
-}
 
 void setLed(int value) {
   ledValue = value;

@@ -7,6 +7,8 @@ class State {
 
 public:
   virtual int step(float dt) {}
+  virtual void onEnter() {}
+  virtual void onExit() {}
   virtual void onKeyPress(int btn, unsigned long duration, boolean repeated) {}
   virtual void onKeyRelease(int btn, unsigned long duration) {}
   virtual void onKeyDown(int btn) {}

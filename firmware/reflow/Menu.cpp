@@ -37,7 +37,6 @@ String Menu::getActive() {
 }
 
 void Menu::render() {
-  display->clearDisplay();
   display->setTextSize(1);
   
   int scrollOffset = 0;
@@ -53,8 +52,6 @@ void Menu::render() {
   for (int i = 0; i < itemCount; i++) {
     renderItem(items[i], i, scrollOffset, i == activeIndex);
   }
-  
-  display->display();
 }
 
 void Menu::renderItem(String text, int index, int scrollOffset, boolean active) {

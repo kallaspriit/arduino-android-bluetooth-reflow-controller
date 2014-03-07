@@ -23,7 +23,11 @@ MainMenuState::MainMenuState(Adafruit_PCD8544* display) :
 {}
 
 int MainMenuState::step(float dt) {
+  display->clearDisplay();
+  
   menu.render();
+  
+  display->display();
   
   return popLastIntent();
 }

@@ -9,7 +9,7 @@ class ProfileRenderer {
 public:
   ProfileRenderer(Adafruit_PCD8544* display, ReflowProfile* profile);
   
-  void render(int x, int y, int width, int height, int elapsed);
+  void render(int x, int y, int width, int height, int elapsed, int* realTemperatures);
   
 private:
   Adafruit_PCD8544* display;

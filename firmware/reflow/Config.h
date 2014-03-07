@@ -19,8 +19,14 @@
 #define BTN_DOWN 19
 
 // configuration
-#define btnDebounceDuration 10
-#define btnRepeatInterval 300
+#define BTN_DEBOUNCE_DURATION 10
+#define BTN_REPEAT_INTERVAL 300
+#define PROFILE_MAX_DURATION 1200 // 20 minutes storage for graph
+
+// simulation parameters
+#define SIMUALATION_MODE true
+#define SIMULATION_HEATING_SPEED 1.5f
+#define SIMULATION_COOLING_SPEED 1.0f
 
 // choose which serial to use - "Serial" for debugging, "Serial1" for bluetooth
 #define SERIAL Serial
