@@ -20,4 +20,13 @@
 
 // configuration
 #define btnDebounceDuration 10
-#define btnRepeatInterval 300
+#define btnRepeatInterval 10
+
+// choose which serial to use - "Serial" for debugging, "Serial1" for bluetooth
+#define SERIAL Serial
+//#define SERIAL Serial1
+
+// intents
+#define INTENT_NONE 0
+#define INTENT_MAIN_MENU 1
+#define INTENT_START_REFLOW 2

@@ -6,11 +6,17 @@
 class State {
 
 public:
-  virtual void step(unsigned long dt) {}
+  virtual int step(float dt) {}
   virtual void onKeyPress(int btn, unsigned long duration, boolean repeated) {}
   virtual void onKeyRelease(int btn, unsigned long duration) {}
   virtual void onKeyDown(int btn) {}
   virtual void onKeyUp(int btn) {}
+  
+  virtual void setIntent(int intent);
+  virtual int popLastIntent();
+  
+protected:
+  int intent;
 
 };
 

@@ -14,7 +14,7 @@ class MainMenuState : public State {
 public:
   MainMenuState(Adafruit_PCD8544* display);
   
-  void step(unsigned long dt);
+  int step(float dt);
   void onKeyPress(int btn, unsigned long duration, boolean repeated);
   
 private:

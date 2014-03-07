@@ -16,6 +16,26 @@ void Menu::setItems(String* items, int itemCount) {
   this->itemCount = itemCount;
 }
 
+void Menu::moveUp() {
+  if (activeIndex > 0) {
+      activeIndex--;
+      
+      render();
+    }
+}
+
+void Menu::moveDown() {
+  if (activeIndex < itemCount - 1) {
+    activeIndex++;
+    
+    render();
+  }
+}
+
+String Menu::getActive() {
+  return items[activeIndex];
+}
+
 void Menu::render() {
   display->clearDisplay();
   display->setTextSize(1);

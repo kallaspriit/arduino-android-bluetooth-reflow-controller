@@ -22,10 +22,6 @@ unsigned long lastUIRenderTime = 0; // TODO Move to state
 unsigned long startTime = 0; // TODO Move to state
 int counter = 1; // TODO Move to state
 
-// choose which serial to use - "Serial" for debugging, "Serial1" for bluetooth
-#define SERIAL Serial
-//#define SERIAL Serial1
-
 // display renderer
 Adafruit_PCD8544 display = Adafruit_PCD8544(SCREEN_SCLK, SCREEN_MOSI, SCREEN_DC, SCREEN_SCE, SCREEN_RST);
 
@@ -34,6 +30,7 @@ Adafruit_MAX31855 thermocouple(THRERMO_CLK, THERMO_CS, THERMO_DO);
 
 // states
 MainMenuState mainMenuState = MainMenuState(&display);
+ReflowState reflowState = ReflowState(&display);
 
 // buttons
 Button btnUp = Button(BTN_UP, btnDebounceDuration);
@@ -84,7 +81,7 @@ void setup() {
 
 void loop() {
   unsigned long currentTime = millis();
-  unsigned long dt = lastStepTime - currentTime;
+  float dt = (float)(currentTime - lastStepTime) / 1000.0f;
   
   // update buttons
   for (int i = 0; i < buttonCount; i++) {
@@ -113,7 +110,11 @@ void loop() {
   
   // render current state
   if (state != NULL) {
-    state->step(dt); 
+    int intent = state->step(dt); 
+    
+    if (intent != INTENT_NONE) {
+      processIntent(intent);
+    }
   }
   
   // handle input
@@ -134,6 +135,14 @@ void loop() {
   lastStepTime = currentTime;
   
   delay(100); // TODO Rem
+}
+
+void processIntent(int intent) {
+  if (intent == INTENT_MAIN_MENU) {
+    setState(mainMenuState);
+  } else if (intent == INTENT_START_REFLOW) {
+    setState(reflowState);
+  }
 }
 
 void onKeyPress(int btn, unsigned long duration, boolean repeated) {
@@ -200,7 +209,7 @@ void onKeyUp(int btn) {
 
 void setState(State& newState) {
   lastState = state;
-  state = &newState; 
+  state = &newState;
 }
 
 void setLastState() {

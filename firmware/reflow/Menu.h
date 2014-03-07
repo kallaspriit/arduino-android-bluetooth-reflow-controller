@@ -14,6 +14,11 @@ public:
   void setItems(String* items, int itemCount);
   void render();
   
+  void moveUp();
+  void moveDown();
+  
+  String getActive();
+  
   int activeIndex;
   int itemCount;
   

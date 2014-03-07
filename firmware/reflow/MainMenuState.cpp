@@ -4,28 +4,39 @@
 #include "Adafruit_GFX.h"
 #include "Adafruit_PCD8544.h"
 
-MainMenuState::MainMenuState(Adafruit_PCD8544* display) : display(display), items({"Start reflow", "Pick profile", "Show profile", "Learn PID", "About"}), menu(display, items, itemCount) {
+#define ACTION_START_REFLOW "Start reflow"
+#define ACTION_PICK_PROFILE "Pick profile"
+#define ACTION_SHOW_PROFILE "Show profile"
+#define ACTION_LEARN "Learn"
+#define ACTION_ABOUT "About"
 
-}
+MainMenuState::MainMenuState(Adafruit_PCD8544* display) :
+  display(display),
+  items({
+    ACTION_START_REFLOW,
+    ACTION_PICK_PROFILE,
+    ACTION_SHOW_PROFILE,
+    ACTION_LEARN,
+    ACTION_ABOUT
+  }),
+  menu(display, items, itemCount)
+{}
 
-void MainMenuState::step(unsigned long dt) {
-  Serial.print("Step: ");
-  Serial.println(dt);
-  
+int MainMenuState::step(float dt) {
   menu.render();
+  
+  return popLastIntent();
 }
 
 void MainMenuState::onKeyPress(int btn, unsigned long duration, boolean repeated) {
-  if (btn == BTN_UP) { // TODO Config header
-      if (menu.activeIndex > 0) {
-        menu.activeIndex--;
-      }
+  if (btn == BTN_UP) {
+      menu.moveUp();
     } else if (btn == BTN_DOWN) {
-      if (menu.activeIndex < menu.itemCount - 1) {
-        menu.activeIndex++;
-      }
+      menu.moveDown();
     } else if (btn == BTN_SELECT) {
-      
+      if (menu.getActive() == ACTION_START_REFLOW) {
+        setIntent(INTENT_START_REFLOW);
+      }
     }
 }
 
