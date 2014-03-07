@@ -4,7 +4,6 @@
 class X {
 
 public:
-
   X();
   
 private:
