@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 
+#include "Relay.h"
 #include "../Adafruit_MAX31855/Adafruit_MAX31855.h"
 
 class Owen {
@@ -16,11 +17,13 @@ public:
   void setHeaterOn(boolean enabled);
   void setSimulationMode(boolean enabled);
   void setTargetTemperature(int temperature);
+  void reset();
   
   void step(float dt);
   
 private:
   Adafruit_MAX31855 thermocouple;
+  Relay relay;
   boolean enabled;
   boolean heaterOn;
   boolean simulationMode;

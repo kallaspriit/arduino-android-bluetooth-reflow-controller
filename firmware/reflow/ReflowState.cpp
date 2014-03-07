@@ -17,12 +17,15 @@ ReflowState::ReflowState(Adafruit_PCD8544* display, Owen* owen, ReflowProfile* p
 {}
 
 int ReflowState::step(float dt) {
+  int totalTime = profile->getTotalTime();
+  
   if (reflowing) {
     reflowDuration += dt; // test for faster progress
   }
   
-  if (reflowDuration >= profile->getTotalTime()) {
+  if (reflowDuration >= totalTime) {
     reflowing = false;
+    reflowDuration = totalTime;
   }
   
   int sensorTemp = owen->getTemperature();
@@ -124,13 +127,15 @@ void ReflowState::onEnter() {
   reflowing = true;
   
   // reset simulation
+  owen->reset();
   owen->setSimulationMode(SIMUALATION_MODE);
 }
 
 void ReflowState::onExit() {
   owen->setEnabled(false);
   owen->setTargetTemperature(0);
-  owen->step(0.1f);
+ 
+  step(0.1f);
 }
 
 void ReflowState::onKeyPress(int btn, unsigned long duration, boolean repeated) {

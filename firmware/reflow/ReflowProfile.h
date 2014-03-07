@@ -34,7 +34,7 @@ private:
   int startTemp = 25; // TODO internal temp
   int preheatTemp = 150;
   int soakingTemp = 170;
-  int reflowTemp = 250;
+  int reflowTemp = 200;
   int coolingTemp = startTemp;
 };
 

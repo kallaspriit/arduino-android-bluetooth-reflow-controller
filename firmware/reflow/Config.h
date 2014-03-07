@@ -18,6 +18,11 @@
 #define BTN_SELECT 18
 #define BTN_DOWN 19
 
+// relay
+#define RELAY_PIN 20
+#define RELAY_CONNECTED_LEVEL LOW
+#define RELAY_MIN_INTERVAL 3.0f // minimum pause between relay switching states
+
 // configuration
 #define BTN_DEBOUNCE_DURATION 10
 #define BTN_REPEAT_INTERVAL 300
@@ -25,7 +30,7 @@
 
 // simulation parameters
 #define SIMUALATION_MODE true
-#define SIMULATION_HEATING_SPEED 1.5f
+#define SIMULATION_HEATING_SPEED 2.0f
 #define SIMULATION_COOLING_SPEED 1.0f
 
 // choose which serial to use - "Serial" for debugging, "Serial1" for bluetooth
