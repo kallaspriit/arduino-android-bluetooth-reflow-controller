@@ -1,5 +1,5 @@
-#ifndef MAINMENUSTATE_H
-#define MAINMENUSTATE_H
+#ifndef REFLOWSTATE_H
+#define REFLOWSTATE_H
 
 #include "State.h"
 #include "Menu.h"
@@ -9,10 +9,10 @@
 class Adafruit_PCD8544;
 class Menu;
 
-class MainMenuState : public State {
+class ReflowState : public State {
 
 public:
-  MainMenuState(Adafruit_PCD8544* display);
+  ReflowState(Adafruit_PCD8544* display);
   
   void step(unsigned long dt);
   void onKeyPress(int btn, unsigned long duration, boolean repeated);

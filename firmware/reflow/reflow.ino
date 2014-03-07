@@ -1,48 +1,13 @@
 #include "Button.h"
 #include "Menu.h"
+#include "Config.h"
+
 #include "MainMenuState.h"
+#include "ReflowState.h"
+
 #include "Adafruit_MAX31855.h"
 #include "Adafruit_GFX.h"
 #include "Adafruit_PCD8544.h"
-
-// indicators
-const int LED_PIN = 3;
-
-// thermocouple
-const int THERMO_DO = 12;
-const int THERMO_CS = 10;
-const int THRERMO_CLK = 13;
-
-// PCD8544 Nokia screen
-const int SCREEN_SCLK = 13; // clock
-const int SCREEN_MOSI = 11; // data out
-const int SCREEN_DC = 16; // data/command select
-const int SCREEN_SCE = 14; // chip select
-const int SCREEN_RST = 15; // reset
-
-// buttons
-const int BTN_UP = 17;
-const int BTN_SELECT = 18;
-const int BTN_DOWN = 19;
-
-// configuration
-const int btnDebounceDuration = 10;
-const int btnRepeatInterval = 300;
-
-// temperature profile timing
-int preheatTime = 1.5f * 60.0f; // TODO use memory
-int soakingTime = 1.5f * 60.0f;
-int reflowTime = 1.0f * 60.0f;
-int peakTime = 20;
-int coolingTime = 2.0f * 60.0f;
-int totalTime = preheatTime + soakingTime + reflowTime + peakTime + coolingTime;
-
-// temperature profile temperatures
-int startTemp = 25; // TODO internal temp
-int preheatTemp = 150;
-int soakingTemp = 170;
-int reflowTemp = 250;
-int coolingTemp = startTemp;
 
 // runtime information
 State* state = NULL;
@@ -76,6 +41,21 @@ Button btnSelect = Button(BTN_SELECT, btnDebounceDuration);
 Button btnDown = Button(BTN_DOWN, btnDebounceDuration);
 Button buttons[] = {btnUp, btnSelect, btnDown};
 int buttonCount = 3;
+
+// temperature profile timing
+int preheatTime = 1.5f * 60.0f; // TODO use memory
+int soakingTime = 1.5f * 60.0f;
+int reflowTime = 1.0f * 60.0f;
+int peakTime = 20;
+int coolingTime = 2.0f * 60.0f;
+int totalTime = preheatTime + soakingTime + reflowTime + peakTime + coolingTime;
+
+// temperature profile temperatures
+int startTemp = 25; // TODO internal temp
+int preheatTemp = 150;
+int soakingTemp = 170;
+int reflowTemp = 250;
+int coolingTemp = startTemp;
 
 void setup() {
   // setup serial

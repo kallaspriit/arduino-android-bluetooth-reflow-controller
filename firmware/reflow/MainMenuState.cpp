@@ -1,4 +1,5 @@
 #include "MainMenuState.h"
+#include "Config.h"
 
 #include "Adafruit_GFX.h"
 #include "Adafruit_PCD8544.h"
@@ -15,15 +16,15 @@ void MainMenuState::step(unsigned long dt) {
 }
 
 void MainMenuState::onKeyPress(int btn, unsigned long duration, boolean repeated) {
-  if (btn == 17) { // TODO Config header
+  if (btn == BTN_UP) { // TODO Config header
       if (menu.activeIndex > 0) {
         menu.activeIndex--;
       }
-    } else if (btn == 19) {
+    } else if (btn == BTN_DOWN) {
       if (menu.activeIndex < menu.itemCount - 1) {
         menu.activeIndex++;
       }
-    } else if (btn == 18) {
+    } else if (btn == BTN_SELECT) {
       
     }
 }
