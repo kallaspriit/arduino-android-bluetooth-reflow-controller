@@ -1,4 +1,5 @@
 #include "Button.h"
+#include "Menu.h"
 #include "Adafruit_MAX31855.h"
 #include "Adafruit_GFX.h"
 #include "Adafruit_PCD8544.h"
@@ -57,21 +58,23 @@ int counter = 1;
 // main menu state
 String mainMenuItems[] = {"Start reflow", "Pick profile", "Show profile", "Learn PID", "About"};
 int mainMenuItemCount = 5;
-int activeMainMenuIndex = 0;
 
 String command = "";
 char commandStart = '<';
 char commandEnd = '>';
 
 // choose which serial to use - "Serial" for debugging, "Serial1" for bluetooth
-#define SERIAL Serial
-//#define SERIAL Serial1
+//#define SERIAL Serial
+#define SERIAL Serial1
 
 // display renderer
 Adafruit_PCD8544 display = Adafruit_PCD8544(SCREEN_SCLK, SCREEN_MOSI, SCREEN_DC, SCREEN_SCE, SCREEN_RST);
 
 // thermocouple
 Adafruit_MAX31855 thermocouple(THRERMO_CLK, THERMO_CS, THERMO_DO);
+
+// menus
+Menu mainMenu = Menu(&display, mainMenuItems, mainMenuItemCount);
 
 // buttons
 Button btnUp = Button(BTN_UP, btnDebounceDuration);
@@ -94,7 +97,7 @@ void setup() {
   
   // setup display
   display.begin();
-  display.setContrast(30);
+  display.setContrast(50);
   display.clearDisplay();
   display.display();
   
@@ -156,25 +159,25 @@ void loop() {
 }
 
 void onKeyPress(int btn, unsigned long duration, boolean repeated) {
-  //SERIAL.print("Pressed: ");
-  //SERIAL.print(btn);
-  //SERIAL.println(repeated ? "repeated" : "not repeated");
+  SERIAL.print("Pressed: ");
+  SERIAL.print(btn);
+  SERIAL.println(repeated ? " repeated" : " not repeated");
   
   if (state == STATE_MAIN_MENU) {
     if (btn == BTN_UP) {
-      if (activeMainMenuIndex > 0) {
-        activeMainMenuIndex--;
+      if (mainMenu.activeIndex > 0) {
+        mainMenu.activeIndex--;
        
         displayMainMenuState(true);
       }
     } else if (btn == BTN_DOWN) {
-      if (activeMainMenuIndex < mainMenuItemCount - 1) {
-        activeMainMenuIndex++;
+      if (mainMenu.activeIndex < mainMenuItemCount - 1) {
+        mainMenu.activeIndex++;
        
         displayMainMenuState(true);
       }
     } else if (btn == BTN_SELECT) {
-      onMainMenuSelect(activeMainMenuIndex);
+      onMainMenuSelect(mainMenu.activeIndex);
     }
   } else if (state == STATE_REFLOWING) {
     if (btn == BTN_SELECT) {
@@ -227,50 +230,11 @@ void displayMainMenuState(boolean force) {
     return; 
   }
   
-  renderMenu(mainMenuItems, activeMainMenuIndex);
+  mainMenu.render();
 }
 
 void onMainMenuSelect(int index) {
    setState(STATE_REFLOWING);
-}
-
-void renderMenu(String items[], int activeIndex) {
-  display.clearDisplay();
-  display.setTextSize(1);
-  
-  int scrollOffset = 0;
-  
-  if (activeMainMenuIndex <= 1) {
-    scrollOffset = 0;
-  } else if (activeMainMenuIndex == mainMenuItemCount - 1) {
-    scrollOffset = activeMainMenuIndex - 2;
-  } else {
-    scrollOffset = activeMainMenuIndex - 1;
-  }
-  
-  for (int i = 0; i < mainMenuItemCount; i++) {
-    renderMenuItem(mainMenuItems[i], i, scrollOffset, i == activeMainMenuIndex);
-  }
-  
-  display.display();
-}
-
-void renderMenuItem(String text, int index, int scrollOffset, boolean active) {
-  int lineHeight = 13;
-  int textHeight = 7;
-  int padding = (lineHeight - textHeight) / 2;
-  int rowX = 0;
-  int rowY = lineHeight * index - scrollOffset * lineHeight;
-  
-  if (active) {
-    display.fillRect(0, rowY, display.width() - 1, lineHeight, BLACK);
-    display.setTextColor(WHITE);
-  } else {
-    display.setTextColor(BLACK);
-  }
-  
-  display.setCursor(rowX + 3, rowY + padding);
-  display.println(text);
 }
 
 void displayReflowingState(boolean force) {
@@ -293,11 +257,11 @@ void displayReflowingState(boolean force) {
   sensorTemp = targetTemp; // test
 
   // send information over serial
-  /*SERIAL.print(counter);
+  SERIAL.print(counter);
   SERIAL.print(". internal: ");
   SERIAL.print(internalTemp);
   SERIAL.print(", sensor: ");
-  SERIAL.println(sensorTemp);*/
+  SERIAL.println(sensorTemp);
   
   lastUIRenderTime = currentTime;
   
