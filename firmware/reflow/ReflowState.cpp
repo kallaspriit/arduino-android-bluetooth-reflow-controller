@@ -43,6 +43,7 @@ int ReflowState::step(float dt) {
   if (currentTime - lastRenderTime >= 500) {
     display->clearDisplay();
     
+    // TODO Toggle between temperatures and precent-time left each couple of seconds
     renderTemperatures(sensorTemp, targetTemp);
     profileRenderer.render(0, 19, display->width(), display->height() - 19, reflowDuration, realTemperatures);
     renderProgress(progressPercentage, profile->getTotalTime() - reflowDuration);
