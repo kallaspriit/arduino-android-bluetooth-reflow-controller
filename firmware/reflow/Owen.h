@@ -22,13 +22,17 @@ public:
   void step(float dt);
   
 private:
+  void simulate(float dt);
+
   Adafruit_MAX31855 thermocouple;
   Relay relay;
   boolean enabled;
   boolean heaterOn;
-  boolean simulationMode;
   int targetTemperature;
+  
+  boolean simulationMode;
   float simulatedTemperature;
+  float simulatedHeaterSpeed;
 
 };
 

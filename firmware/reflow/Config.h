@@ -30,8 +30,10 @@
 
 // simulation parameters
 #define SIMUALATION_MODE true
-#define SIMULATION_HEATING_SPEED 2.0f
-#define SIMULATION_COOLING_SPEED 1.0f
+#define SIMULATION_HEATING_ACCELERATION 0.2f
+#define SIMULATION_COOLING_ACCELERATION -0.1f
+#define SIMULATION_MAX_HEATING_SPEED 2.0f
+#define SIMULATION_MAX_COOLING_SPEED -1.0f
 
 // choose which serial to use - "Serial" for debugging, "Serial1" for bluetooth
 #define SERIAL Serial
