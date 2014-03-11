@@ -4,6 +4,8 @@
 #include <Arduino.h>
 
 #include "Relay.h"
+#include "PID.h"
+//#include "../PID_v1/PID_v1.h"
 #include "../Adafruit_MAX31855/Adafruit_MAX31855.h"
 
 class Owen {
@@ -11,12 +13,12 @@ class Owen {
 public:
   Owen();
   
-  int getTemperature();
+  float getTemperature();
   
   void setEnabled(boolean enabled);
   void setHeaterOn(boolean enabled);
   void setSimulationMode(boolean enabled);
-  void setTargetTemperature(int temperature);
+  void setTargetTemperature(float temperature);
   void reset();
   
   void step(float dt);
@@ -28,7 +30,18 @@ private:
   Relay relay;
   boolean enabled;
   boolean heaterOn;
-  int targetTemperature;
+  float targetTemperature;
+  float timeSinceLastControl;
+  
+  PID pid;
+  /*double pidP;
+  double pidI;
+  double pidD;
+  double pidInput;
+  double pidOutput;
+  double pidSetpoint;
+  int pidWindowSize;
+  unsigned long pidWindowStartTime;*/
   
   boolean simulationMode;
   float simulatedTemperature;

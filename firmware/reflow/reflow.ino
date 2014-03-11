@@ -10,6 +10,7 @@
 #include "Adafruit_GFX.h"
 #include "Adafruit_PCD8544.h"
 #include "Adafruit_MAX31855.h"
+//#include "PID_v1.h"
 
 // runtime information
 State* state = NULL;
@@ -72,9 +73,9 @@ void setup() {
 void loop() {
   unsigned long currentTime = millis();
   float dt = (float)(currentTime - lastStepTime) / 1000.0f;
-  
+
   // make time move faster for testing
-  //dt *= 20.0f;
+  dt *= 20.0f;
   
   // update buttons
   for (int i = 0; i < buttonCount; i++) {

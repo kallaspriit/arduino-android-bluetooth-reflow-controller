@@ -17,7 +17,7 @@ ReflowState::ReflowState(Adafruit_PCD8544* display, Owen* owen, ReflowProfile* p
 {}
 
 int ReflowState::step(float dt) {
-  int totalTime = profile->getTotalTime();
+  float totalTime = profile->getTotalTime();
   
   if (reflowing) {
     reflowDuration += dt; // test for faster progress
@@ -28,15 +28,16 @@ int ReflowState::step(float dt) {
     reflowDuration = totalTime;
   }
   
-  int sensorTemp = owen->getTemperature();
-  int targetTemp = profile->getTargetTempAt(reflowDuration);
+  float sensorTemp = owen->getTemperature();
+  float targetTemp = profile->getTargetTempAt(reflowDuration);
+  float nextTemp = profile->getNextTempAt(reflowDuration);
   int progressPercentage = reflowDuration * 100 / profile->getTotalTime();
   unsigned long currentTime = millis();
   
   realTemperatures[(int)reflowDuration] = sensorTemp;
   
   owen->setEnabled(reflowing);
-  owen->setTargetTemperature(targetTemp);
+  owen->setTargetTemperature(nextTemp);
   owen->step(dt);
   
   // dont render the UI too often

@@ -36,6 +36,7 @@ void ProfileRenderer::render(int posX, int posY, int windowWidth, int windowHeig
       dy = (float)realTemp * pixelsPerDegree;
       
       display->drawLine(x, startY, x, startY - dy, BLACK);
+      //display->drawPixel(x, startY - dy, WHITE);
     }
   } 
 }

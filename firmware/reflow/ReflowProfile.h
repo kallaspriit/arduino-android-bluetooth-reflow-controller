@@ -6,36 +6,37 @@ class ReflowProfile {
 public:
   ReflowProfile();
   
-  int getTargetTempAt(int seconds);
+  float getTargetTempAt(float seconds);
+  float getNextTempAt(float seconds);
   
-  int getPreheatTime();
-  int getSoakingTime();
-  int getReflowTime();
-  int getPeakTime();
-  int getCoolingTime();
-  int getTotalTime();
+  float getPreheatTime();
+  float getSoakingTime();
+  float getReflowTime();
+  float getPeakTime();
+  float getCoolingTime();
+  float getTotalTime();
   
-  int getStartTemp();
-  int getPreheatTemp();
-  int getSoakingTemp();
-  int getReflowTemp();
-  int getCoolingTemp();
+  float getStartTemp();
+  float getPreheatTemp();
+  float getSoakingTemp();
+  float getReflowTemp();
+  float getCoolingTemp();
 
 private:
   // temperature profile timing
-  int preheatTime = 1.5f * 60.0f; // TODO use memory
-  int soakingTime = 1.5f * 60.0f;
-  int reflowTime = 1.0f * 60.0f;
-  int peakTime = 20;
-  int coolingTime = 2.0f * 60.0f;
-  int totalTime = preheatTime + soakingTime + reflowTime + peakTime + coolingTime;
+  float preheatTime = 1.5f * 60.0f; // TODO use memory
+  float soakingTime = 1.5f * 60.0f;
+  float reflowTime = 1.0f * 60.0f;
+  float peakTime = 20;
+  float coolingTime = 2.0f * 60.0f;
+  float totalTime = preheatTime + soakingTime + reflowTime + peakTime + coolingTime;
   
   // temperature profile temperatures
-  int startTemp = 25; // TODO internal temp
-  int preheatTemp = 150;
-  int soakingTemp = 170;
-  int reflowTemp = 200;
-  int coolingTemp = startTemp;
+  float startTemp = 25.0f; // TODO internal temp
+  float preheatTemp = 150.0f;
+  float soakingTemp = 170.0f;
+  float reflowTemp = 250.0f;
+  float coolingTemp = 100.0f;
 };
 
 #endif

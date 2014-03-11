@@ -5,54 +5,54 @@ ReflowProfile::ReflowProfile() {
   // TODO Load from memory 
 }
 
-int ReflowProfile::getPreheatTime() {
+float ReflowProfile::getPreheatTime() {
   return preheatTime;
 }
 
-int ReflowProfile::getSoakingTime() {
+float ReflowProfile::getSoakingTime() {
   return soakingTime;
 }
 
-int ReflowProfile::getReflowTime() {
+float ReflowProfile::getReflowTime() {
   return reflowTime;
 }
 
-int ReflowProfile::getPeakTime() {
+float ReflowProfile::getPeakTime() {
   return peakTime;
 }
 
-int ReflowProfile::getCoolingTime() {
+float ReflowProfile::getCoolingTime() {
   return coolingTime;
 }
 
-int ReflowProfile::getTotalTime() {
+float ReflowProfile::getTotalTime() {
   return getPreheatTime() + getSoakingTime() + getReflowTime() + getPeakTime() + getCoolingTime(); 
 }
 
 
-int ReflowProfile::getStartTemp() {
+float ReflowProfile::getStartTemp() {
   return startTemp;
 }
 
-int ReflowProfile::getPreheatTemp() {
+float ReflowProfile::getPreheatTemp() {
   return preheatTemp;
 }
 
-int ReflowProfile::getSoakingTemp() {
+float ReflowProfile::getSoakingTemp() {
   return soakingTemp;
 }
 
-int ReflowProfile::getReflowTemp() {
+float ReflowProfile::getReflowTemp() {
   return reflowTemp;
 }
 
-int ReflowProfile::getCoolingTemp() {
+float ReflowProfile::getCoolingTemp() {
   return coolingTemp;
 }
 
 
-int ReflowProfile::getTargetTempAt(int seconds) {
-  int t1, t2;
+float ReflowProfile::getTargetTempAt(float seconds) {
+  float t1, t2;
   float progress;
   
   if (seconds < preheatTime) {
@@ -82,4 +82,21 @@ int ReflowProfile::getTargetTempAt(int seconds) {
   }
   
   return t1 + (float)(t2 - t1) * progress; 
+}
+
+float ReflowProfile::getNextTempAt(float seconds) {
+  float t1, t2;
+  float progress;
+  
+  if (seconds < preheatTime) {
+    return preheatTemp;
+  } else if (seconds < preheatTime + soakingTime) {
+    return soakingTemp;
+  } else if (seconds < preheatTime + soakingTime + reflowTime) {
+    return reflowTemp;
+  } else if (seconds < preheatTime + soakingTime + reflowTime + peakTime) {
+    return reflowTemp;
+  } else {
+    return coolingTemp;
+  } 
 }
