@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 #include "State.h"
-#include "ProfileRenderer.h"
+#include "Renderer.h"
 #include "Config.h"
 
 class Adafruit_PCD8544;
@@ -28,7 +28,7 @@ private:
   Adafruit_PCD8544* display;
   Owen* owen;
   ReflowProfile* profile;
-  ProfileRenderer profileRenderer;
+  Renderer renderer;
   
   float reflowDuration;
   boolean reflowing;

@@ -1,13 +1,26 @@
-#include "ProfileRenderer.h"
+#include "Renderer.h"
 #include "Config.h"
 #include "ReflowProfile.h"
 
-#include "Adafruit_GFX.h"
-#include "Adafruit_PCD8544.h"
+Renderer::Renderer(Adafruit_PCD8544* display, ReflowProfile* profile) : display(display), profile(profile) {}
 
-ProfileRenderer::ProfileRenderer(Adafruit_PCD8544* display, ReflowProfile* profile) : display(display), profile(profile) {}
+void Renderer::renderTextCentered(int x, int y, String text, boolean large, int color, int width) {
+  if (width <= 0) {
+    width = display->width(); 
+  }
+  
+  int charWidth = large ? 12 : 6;
+  int textWidth = text.length() * charWidth;
+  int drawPos = x + width / 2 - textWidth / 2;
+  
+  display->setTextSize(large ? 2 : 1);
+  display->setTextColor(color);
+  
+  display->setCursor(drawPos, y);
+  display->print(text);
+}
 
-void ProfileRenderer::render(int posX, int posY, int windowWidth, int windowHeight, int elapsed, int* realTemperatures) {
+void Renderer::renderProfile(int posX, int posY, int windowWidth, int windowHeight, int elapsed, int* realTemperatures) {
   float pixelsPerSecond = (float)windowWidth / (float)profile->getTotalTime();
   float pixelsPerDegree = (float)windowHeight / (float)profile->getReflowTemp();
   

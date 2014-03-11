@@ -1,7 +1,7 @@
 #include "ReflowState.h"
 #include "Config.h"
 #include "ReflowProfile.h"
-#include "ProfileRenderer.h"
+#include "Renderer.h"
 #include "Owen.h"
 #include "Adafruit_GFX.h"
 #include "Adafruit_PCD8544.h"
@@ -9,7 +9,7 @@
 ReflowState::ReflowState(Adafruit_PCD8544* display, Owen* owen, ReflowProfile* profile) :
   display(display),
   owen(owen),
-  profileRenderer(display, profile),
+  renderer(display, profile),
   profile(profile),
   reflowDuration(0.0f),
   reflowing(false),
@@ -46,7 +46,7 @@ int ReflowState::step(float dt) {
     
     // TODO Toggle between temperatures and precent-time left each couple of seconds
     renderTemperatures(sensorTemp, targetTemp);
-    profileRenderer.render(0, 19, display->width(), display->height() - 19, reflowDuration, realTemperatures);
+    renderer.renderProfile(0, 19, display->width(), display->height() - 19, reflowDuration, realTemperatures);
     renderProgress(progressPercentage, profile->getTotalTime() - reflowDuration);
     
     display->display();
@@ -58,7 +58,17 @@ int ReflowState::step(float dt) {
 }
 
 void ReflowState::renderTemperatures(int sensorTemp, int targetTemp) {
-  int textX = 0;
+  String text = "";
+  
+  if (reflowing) {
+    text = text + sensorTemp + "/" + targetTemp;
+  } else {
+    text = text + "Done!"; 
+  }
+  
+  renderer.renderTextCentered(0, 0, text, true);
+  
+  /*int textX = 0;
   
   if (sensorTemp < 10) {
     textX += 12;
@@ -77,7 +87,7 @@ void ReflowState::renderTemperatures(int sensorTemp, int targetTemp) {
   display->setCursor(textX, 0);
   display->print(sensorTemp);
   display->print("/");
-  display->println(targetTemp); 
+  display->println(targetTemp);*/
 }
 
 void ReflowState::renderProgress(int percentage, int duration) {
