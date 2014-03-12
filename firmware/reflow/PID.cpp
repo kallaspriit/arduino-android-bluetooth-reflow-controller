@@ -1,5 +1,9 @@
 #include "PID.h"
+
 #include <Arduino.h>
+
+//#define SERIAL Serial
+#define SERIAL Serial1
 
 PID::PID(float p, float i, float d, float iLimit) {
   this->p = p;
@@ -42,31 +46,31 @@ float PID::getValue(float feedback, float dt) {
   float pidValue = pValue + iValue + dValue;
 
   //if (counter % 100 == 0) {
-    Serial.print("Target: ");
-    Serial.print(target);
-    Serial.print(", actual: ");
-    Serial.print(feedback);
-    Serial.print(", error: ");
-    Serial.print(error);
-    /*Serial.print(", lastError: ");
-    Serial.print(lastError);
-    Serial.print(", errorDiff: ");
-    Serial.print(errorDiff);*/
-    Serial.print(", p: ");
-    Serial.print(pValue);
-    Serial.print(", i: ");
-    Serial.print(iValue);
-    Serial.print(", d: ");
-    Serial.print(dValue);
-    Serial.print(", output: ");
-    Serial.print(pidValue);
-    Serial.print(", derivative: ");
-    Serial.print(derivative);
-    Serial.print(", integral: ");
-    Serial.print(integral);
-    Serial.print(", dt: ");
-    Serial.print(dt);
-    Serial.println();
+    SERIAL.print("Target: ");
+    SERIAL.print(target);
+    SERIAL.print(", actual: ");
+    SERIAL.print(feedback);
+    SERIAL.print(", error: ");
+    SERIAL.print(error);
+    /*SERIAL.print(", lastError: ");
+    SERIAL.print(lastError);
+    SERIAL.print(", errorDiff: ");
+    SERIAL.print(errorDiff);*/
+    SERIAL.print(", p: ");
+    SERIAL.print(pValue);
+    SERIAL.print(", i: ");
+    SERIAL.print(iValue);
+    SERIAL.print(", d: ");
+    SERIAL.print(dValue);
+    SERIAL.print(", output: ");
+    SERIAL.print(pidValue);
+    SERIAL.print(", derivative: ");
+    SERIAL.print(derivative);
+    SERIAL.print(", integral: ");
+    SERIAL.print(integral);
+    SERIAL.print(", dt: ");
+    SERIAL.print(dt);
+    SERIAL.println();
   //}
   
   lastError = error;

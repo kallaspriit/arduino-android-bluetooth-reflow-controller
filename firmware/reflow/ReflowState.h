@@ -24,6 +24,7 @@ public:
 private:
   void renderTemperatures(int sensorTemp, int targetTemp);
   void renderProgress(int percentage, int duration);
+  void renderConfirmExit(float timeout);
 
   Adafruit_PCD8544* display;
   Owen* owen;
@@ -34,6 +35,11 @@ private:
   boolean reflowing;
   unsigned long lastRenderTime;
   int realTemperatures[PROFILE_MAX_DURATION];
+  float confirmExitTimeout;
+  int profileInfoIndex;
+  int profileInfoCount;
+  float profileInfoChangeInterval;
+  float profileInfoChangeTimeout;
 
 };
 

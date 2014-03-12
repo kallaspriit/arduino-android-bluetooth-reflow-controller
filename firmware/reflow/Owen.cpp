@@ -63,7 +63,7 @@ void Owen::step(float dt) {
        
       pidValue = pid.getValue(temperature, timeSinceLastControl);
        
-      if (pidValue > 0.0f) {
+      if (pidValue > 0.0f && temperature < targetTemperature) {
         setHeaterOn(true);
       } else {
         setHeaterOn(false);
@@ -96,6 +96,9 @@ void Owen::step(float dt) {
     } else {
       setHeaterOn(false);
     }*/
+  } else {
+    setHeaterOn(false);
+    relay.setConnected(false);
   }
   
   if (heaterOn) {

@@ -6,23 +6,23 @@ ReflowProfile::ReflowProfile() {
 }
 
 float ReflowProfile::getPreheatTime() {
-  return preheatTime;
+  return preheatTime * timeMultiplier;
 }
 
 float ReflowProfile::getSoakingTime() {
-  return soakingTime;
+  return soakingTime * timeMultiplier;
 }
 
 float ReflowProfile::getReflowTime() {
-  return reflowTime;
+  return reflowTime * timeMultiplier;
 }
 
 float ReflowProfile::getPeakTime() {
-  return peakTime;
+  return peakTime * timeMultiplier;
 }
 
 float ReflowProfile::getCoolingTime() {
-  return coolingTime;
+  return coolingTime * timeMultiplier;
 }
 
 float ReflowProfile::getTotalTime() {
@@ -55,26 +55,26 @@ float ReflowProfile::getTargetTempAt(float seconds) {
   float t1, t2;
   float progress;
   
-  if (seconds < preheatTime) {
+  if (seconds < getPreheatTime()) {
     t1 = startTemp;
     t2 = preheatTemp;
-    progress = (float)seconds / (float)preheatTime;
-  } else if (seconds < preheatTime + soakingTime) {
+    progress = seconds / getPreheatTime();
+  } else if (seconds < getPreheatTime() + getSoakingTime()) {
     t1 = preheatTemp;
     t2 = soakingTemp;
-    progress = (float)(seconds - preheatTime) / (float)soakingTime;
-  } else if (seconds < preheatTime + soakingTime + reflowTime) {
+    progress = (seconds - getPreheatTime()) / getSoakingTime();
+  } else if (seconds < getPreheatTime() + getSoakingTime() + getReflowTime()) {
     t1 = soakingTemp;
     t2 = reflowTemp;
-    progress = (float)(seconds - preheatTime - soakingTime) / (float)reflowTime;
-  } else if (seconds < preheatTime + soakingTime + reflowTime + peakTime) {
+    progress = (seconds - getPreheatTime() - getSoakingTime()) / getReflowTime();
+  } else if (seconds < getPreheatTime() + getSoakingTime() + getReflowTime() + getPeakTime()) {
     t1 = reflowTemp;
     t2 = reflowTemp;
-    progress = (float)(seconds - preheatTime - soakingTime - reflowTime) / (float)peakTime;
+    progress = (seconds - getPreheatTime() - getSoakingTime() - getReflowTime()) / getPeakTime();
   } else {
     t1 = reflowTemp;
     t2 = coolingTemp;
-    progress = (float)(seconds - preheatTime - soakingTime - reflowTime - peakTime) / (float)coolingTime;
+    progress = (seconds - getPreheatTime() - getSoakingTime() - getReflowTime() - getPeakTime()) / getCoolingTime();
   }
 
   if (progress > 1.0f) {
@@ -88,13 +88,13 @@ float ReflowProfile::getNextTempAt(float seconds) {
   float t1, t2;
   float progress;
   
-  if (seconds < preheatTime) {
+  if (seconds < getPreheatTime()) {
     return preheatTemp;
-  } else if (seconds < preheatTime + soakingTime) {
+  } else if (seconds < getPreheatTime() + getSoakingTime()) {
     return soakingTemp;
-  } else if (seconds < preheatTime + soakingTime + reflowTime) {
+  } else if (seconds < getPreheatTime() + getSoakingTime() + getReflowTime()) {
     return reflowTemp;
-  } else if (seconds < preheatTime + soakingTime + reflowTime + peakTime) {
+  } else if (seconds < getPreheatTime() + getSoakingTime() + getReflowTime() + getPeakTime()) {
     return reflowTemp;
   } else {
     return coolingTemp;

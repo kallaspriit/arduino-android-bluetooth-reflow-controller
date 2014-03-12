@@ -59,7 +59,7 @@ void setup() {
   
   // setup display
   display.begin();
-  display.setContrast(45);
+  display.setContrast(55);
   display.clearDisplay();
   display.display();
   
@@ -74,8 +74,8 @@ void loop() {
   unsigned long currentTime = millis();
   float dt = (float)(currentTime - lastStepTime) / 1000.0f;
 
-  // make time move faster for testing
-  dt *= 20.0f;
+  // time can be made to move faster for simulation etc
+  dt *= TIME_MULTIPLIER;
   
   // update buttons
   for (int i = 0; i < buttonCount; i++) {
@@ -121,7 +121,7 @@ void loop() {
     if (input == commandStart) {
       command = "";
     } else if (input == commandEnd) {
-     processCommand(command);
+      processCommand(command);
 
       command = "";
     } else {

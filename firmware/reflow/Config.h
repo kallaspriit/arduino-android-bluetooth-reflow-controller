@@ -24,20 +24,21 @@
 #define RELAY_MIN_INTERVAL 3.0f // minimum pause between relay switching states
 
 // configuration
+#define SIMUALATION_MODE true // if this is set true, a dummy simulated owen is used instead of the real thermocouple
+#define TIME_MULTIPLIER 1.0f // increase this to for example to 20.0f to make the time pass faster for simulation
 #define BTN_DEBOUNCE_DURATION 10
 #define BTN_REPEAT_INTERVAL 300
-#define PROFILE_MAX_DURATION 1200 // 20 minutes storage for graph
+#define PROFILE_MAX_DURATION 3600 // 60 minutes storage for graph, make sure your profile is not longer
 
 // simulation parameters
-#define SIMUALATION_MODE true
 #define SIMULATION_HEATING_ACCELERATION 0.1f
 #define SIMULATION_COOLING_ACCELERATION -0.1f
 #define SIMULATION_MAX_HEATING_SPEED 2.0f
 #define SIMULATION_MAX_COOLING_SPEED -1.5f
 
 // choose which serial to use - "Serial" for debugging, "Serial1" for bluetooth
-#define SERIAL Serial
-//#define SERIAL Serial1
+//#define SERIAL Serial
+#define SERIAL Serial1
 
 // intents
 #define INTENT_NONE 0

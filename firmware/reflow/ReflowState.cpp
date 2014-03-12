@@ -13,14 +13,25 @@ ReflowState::ReflowState(Adafruit_PCD8544* display, Owen* owen, ReflowProfile* p
   profile(profile),
   reflowDuration(0.0f),
   reflowing(false),
-  lastRenderTime(0)
+  lastRenderTime(0),
+  confirmExitTimeout(0.0f),
+  profileInfoIndex(0),
+  profileInfoCount(2),
+  profileInfoChangeInterval(5.0f),
+  profileInfoChangeTimeout(profileInfoChangeInterval)
 {}
 
 int ReflowState::step(float dt) {
+  float sensorTemp = owen->getTemperature();
+  float targetTemp = profile->getTargetTempAt(reflowDuration);
+  //float nextTemp = profile->getNextTempAt(reflowDuration);
+  int progressPercentage = reflowDuration * 100 / profile->getTotalTime();
   float totalTime = profile->getTotalTime();
+  unsigned long currentTime = millis();
   
   if (reflowing) {
     reflowDuration += dt; // test for faster progress
+    realTemperatures[(int)reflowDuration] = sensorTemp;
   }
   
   if (reflowDuration >= totalTime) {
@@ -28,26 +39,48 @@ int ReflowState::step(float dt) {
     reflowDuration = totalTime;
   }
   
-  float sensorTemp = owen->getTemperature();
-  float targetTemp = profile->getTargetTempAt(reflowDuration);
-  float nextTemp = profile->getNextTempAt(reflowDuration);
-  int progressPercentage = reflowDuration * 100 / profile->getTotalTime();
-  unsigned long currentTime = millis();
-  
-  realTemperatures[(int)reflowDuration] = sensorTemp;
-  
   owen->setEnabled(reflowing);
-  owen->setTargetTemperature(nextTemp);
+  //owen->setTargetTemperature(nextTemp);
+  owen->setTargetTemperature(targetTemp);
   owen->step(dt);
+  
+  // update confirmation timer
+  if (confirmExitTimeout != 0.0f) {
+    confirmExitTimeout -= dt;
+    
+    if (confirmExitTimeout < 0.0f) {
+      confirmExitTimeout = 0.0f;
+    }
+  }
+  
+  // update profile info timeout
+  profileInfoChangeTimeout -= dt;
+  
+  if (profileInfoChangeTimeout <= 0.0f) {
+    profileInfoIndex = (profileInfoIndex + 1) % profileInfoCount;
+    profileInfoChangeTimeout = profileInfoChangeInterval;
+  }
   
   // dont render the UI too often
   if (currentTime - lastRenderTime >= 500) {
     display->clearDisplay();
     
-    // TODO Toggle between temperatures and precent-time left each couple of seconds
-    renderTemperatures(sensorTemp, targetTemp);
-    renderer.renderProfile(0, 19, display->width(), display->height() - 19, reflowDuration, realTemperatures);
-    renderProgress(progressPercentage, profile->getTotalTime() - reflowDuration);
+    if (confirmExitTimeout != 0.0f) {
+      renderConfirmExit(confirmExitTimeout);
+    } else {
+      renderer.renderProfile(0, 19, display->width(), display->height() - 19, reflowDuration, realTemperatures);
+      
+      if (!reflowing) {
+        renderer.renderTextCentered(0, 0, "Done!", true);
+        renderer.renderTextCentered(0, 32, (int)sensorTemp, true, WHITE);
+      } else {
+        if (profileInfoIndex == 0) {
+          renderTemperatures(sensorTemp, targetTemp);
+        } else if (profileInfoIndex == 1) {
+          renderProgress(progressPercentage, profile->getTotalTime() - reflowDuration);
+        }
+      }
+    }
     
     display->display();
     
@@ -60,38 +93,27 @@ int ReflowState::step(float dt) {
 void ReflowState::renderTemperatures(int sensorTemp, int targetTemp) {
   String text = "";
   
-  if (reflowing) {
-    text = text + sensorTemp + "/" + targetTemp;
-  } else {
-    text = text + "Done!"; 
-  }
+  text = text + sensorTemp + "/" + targetTemp;
   
   renderer.renderTextCentered(0, 0, text, true);
-  
-  /*int textX = 0;
-  
-  if (sensorTemp < 10) {
-    textX += 12;
-  } else if (sensorTemp < 100) {
-    textX += 6;
-  }
-  
-  if (targetTemp < 10) {
-    textX += 12;
-  } else if (targetTemp < 100) {
-    textX += 6;
-  }
-  
-  display->setTextSize(2);
-  display->setTextColor(BLACK);
-  display->setCursor(textX, 0);
-  display->print(sensorTemp);
-  display->print("/");
-  display->println(targetTemp);*/
 }
 
 void ReflowState::renderProgress(int percentage, int duration) {
-   // draw percentage
+  int durationValue = duration > 60 ? duration / 60 : duration;
+  String text = "";
+  
+  text = text + percentage + "% " + durationValue + (duration > 60 ? "m" : "s");
+  
+  /*if (duration > 60) {
+    text += "m";
+  } else {
+    text += "m";
+  }*/
+  
+  renderer.renderTextCentered(0, 0, text, true);
+  
+  /*
+  // draw percentage
   int textX = 20;
   int textY = display->height() - 7;
   int charWidth = 6;
@@ -131,7 +153,14 @@ void ReflowState::renderProgress(int percentage, int duration) {
   } else {
     display->print(duration);
     display->print("s");
-  }
+  }*/
+}
+
+void ReflowState::renderConfirmExit(float timeout) {
+  renderer.renderTextCentered(0, 0, "Cancel?", true);
+  renderer.renderTextCentered(0, 18, "Click again");
+  renderer.renderTextCentered(0, 27, "to verify");
+  renderer.renderTextCentered(0, 40, (int)timeout + 1);
 }
 
 void ReflowState::onEnter() {
@@ -145,12 +174,24 @@ void ReflowState::onEnter() {
 
 void ReflowState::onExit() {
   owen->setEnabled(false);
-  owen->setTargetTemperature(0);
- 
-  step(0.1f);
 }
 
 void ReflowState::onKeyPress(int btn, unsigned long duration, boolean repeated) {
-  setIntent(INTENT_MAIN_MENU);
+  if (btn == BTN_SELECT) {
+    if (reflowing) {
+      if (confirmExitTimeout == 0.0f) {
+        confirmExitTimeout = 5.0f; // give the user some time to confirm cancelling the reflow process
+      } else {
+        // user confirmed
+        confirmExitTimeout = 0.0f;
+        setIntent(INTENT_MAIN_MENU);
+      }
+    }
+  } else {
+    // cancel exiting process if in progress
+    if (confirmExitTimeout != 0.0f) {
+      confirmExitTimeout = 0.0f;
+    }
+  }
 }
 

@@ -20,6 +20,7 @@ void Relay::setConnected(boolean mode, boolean force) {
   
   if (force) {
     currentState = requestedState;
+    timeSinceLastSwitch = minSwitchingPause;
     digitalWrite(pin, currentState ? connectedLevel : connectedLevel == HIGH ? LOW : HIGH);
   }
 }
