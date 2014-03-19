@@ -164,6 +164,7 @@ void ReflowState::renderConfirmExit(float timeout) {
 }
 
 void ReflowState::onEnter() {
+  confirmExitTimeout = 0.0f;
   reflowDuration = 0.0f;
   reflowing = true;
   
@@ -186,6 +187,8 @@ void ReflowState::onKeyPress(int btn, unsigned long duration, boolean repeated) 
         confirmExitTimeout = 0.0f;
         setIntent(INTENT_MAIN_MENU);
       }
+    } else {
+      setIntent(INTENT_MAIN_MENU);
     }
   } else {
     // cancel exiting process if in progress

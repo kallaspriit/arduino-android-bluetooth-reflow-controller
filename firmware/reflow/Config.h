@@ -31,8 +31,8 @@
 #define PROFILE_MAX_DURATION 3600 // 60 minutes storage for graph, make sure your profile is not longer
 
 // simulation parameters
-#define SIMULATION_HEATING_ACCELERATION 0.1f
-#define SIMULATION_COOLING_ACCELERATION -0.1f
+#define SIMULATION_HEATING_ACCELERATION 0.05f
+#define SIMULATION_COOLING_ACCELERATION -0.05f
 #define SIMULATION_MAX_HEATING_SPEED 2.0f
 #define SIMULATION_MAX_COOLING_SPEED -1.5f
 
