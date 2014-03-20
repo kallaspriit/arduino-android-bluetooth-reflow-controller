@@ -1,20 +1,8 @@
 #include "PID.h"
+#include "Config.h"
 
+#include "../EEPROMex/EEPROMex.h"
 #include <Arduino.h>
-
-//#define SERIAL Serial
-#define SERIAL Serial1
-
-PID::PID(float p, float i, float d, float iLimit) {
-  this->p = p;
-  this->i = i;
-  this->d = d;
-  this->iLimit = iLimit;
-  this->target = 0.0f;
-  this->lastError = 0.0f;
-  this->integral = 0.0f;
-  this->counter = 0;
-}
 
 float PID::getValue(float feedback, float dt) {
   float error = target - feedback;
@@ -27,9 +15,9 @@ float PID::getValue(float feedback, float dt) {
   errorDiff = error - lastError;
   derivative = errorDiff / dt;
   
-  float pValue = error * p;
-  float iValue = integral * i;
-  float dValue = derivative * d;
+  float pValue = error * profile.p;
+  float iValue = integral * profile.i;
+  float dValue = derivative * profile.d;
   
   /*if (iLimit != -1.0f) {
     float iLimitNegative = -1.0f * iLimit;
@@ -45,6 +33,7 @@ float PID::getValue(float feedback, float dt) {
   
   float pidValue = pValue + iValue + dValue;
 
+  /*
   //if (counter % 100 == 0) {
     SERIAL.print("Target: ");
     SERIAL.print(target);
@@ -52,10 +41,10 @@ float PID::getValue(float feedback, float dt) {
     SERIAL.print(feedback);
     SERIAL.print(", error: ");
     SERIAL.print(error);
-    /*SERIAL.print(", lastError: ");
+    SERIAL.print(", lastError: ");
     SERIAL.print(lastError);
     SERIAL.print(", errorDiff: ");
-    SERIAL.print(errorDiff);*/
+    SERIAL.print(errorDiff);
     SERIAL.print(", p: ");
     SERIAL.print(pValue);
     SERIAL.print(", i: ");
@@ -72,6 +61,7 @@ float PID::getValue(float feedback, float dt) {
     SERIAL.print(dt);
     SERIAL.println();
   //}
+  */
   
   lastError = error;
   

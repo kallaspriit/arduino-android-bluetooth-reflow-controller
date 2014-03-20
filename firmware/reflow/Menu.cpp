@@ -7,7 +7,7 @@
 
 }*/
 
-Menu::Menu(Adafruit_PCD8544* display, String* items, int itemCount) : display(display), items(items), itemCount(itemCount), activeIndex(0) {
+Menu::Menu(Adafruit_PCD8544* display, String* items, int itemCount) : display(display), renderer(display), items(items), itemCount(itemCount), activeIndex(0) {
 
 }
 
@@ -50,24 +50,6 @@ void Menu::render() {
   }
   
   for (int i = 0; i < itemCount; i++) {
-    renderItem(items[i], i, scrollOffset, i == activeIndex);
+    renderer.renderTextRow(items[i], i, scrollOffset, i == activeIndex ? WHITE : BLACK);
   }
-}
-
-void Menu::renderItem(String text, int index, int scrollOffset, boolean active) {
-  int lineHeight = 13;
-  int textHeight = 7;
-  int padding = (lineHeight - textHeight) / 2;
-  int rowX = 0;
-  int rowY = lineHeight * index - scrollOffset * lineHeight;
-  
-  if (active) {
-    display->fillRect(0, rowY, display->width() - 1, lineHeight, BLACK);
-    display->setTextColor(WHITE);
-  } else {
-    display->setTextColor(BLACK);
-  }
-  
-  display->setCursor(rowX + 3, rowY + padding);
-  display->println(text);
 }

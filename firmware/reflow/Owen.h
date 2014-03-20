@@ -20,6 +20,7 @@ public:
   void setSimulationMode(boolean enabled);
   void setTargetTemperature(float temperature);
   void reset();
+  PID* getPID();
   
   void step(float dt);
   

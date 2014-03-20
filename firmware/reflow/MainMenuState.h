@@ -20,7 +20,7 @@ public:
 private:
   Adafruit_PCD8544* display;
   Menu menu;
-  static const int itemCount = 5;
+  static const int itemCount = 6;
   String items[itemCount];
 
 };

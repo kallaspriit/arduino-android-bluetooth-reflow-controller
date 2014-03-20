@@ -1,6 +1,3 @@
-// indicators
-#define LED_PIN 3
-
 // thermocouple
 #define THERMO_DO 12
 #define THERMO_CS 10
@@ -29,6 +26,12 @@
 #define BTN_DEBOUNCE_DURATION 10
 #define BTN_REPEAT_INTERVAL 300
 #define PROFILE_MAX_DURATION 3600 // 60 minutes storage for graph, make sure your profile is not longer
+#define MEMORY_VERSION 2 // update this every time the memory footprint changes
+
+// PID
+#define PID_DEFAULT_P 1.0f
+#define PID_DEFAULT_I 0.0005f
+#define PID_DEFAULT_D 20.0f
 
 // simulation parameters
 #define SIMULATION_HEATING_ACCELERATION 0.05f
@@ -37,10 +40,11 @@
 #define SIMULATION_MAX_COOLING_SPEED -1.5f
 
 // choose which serial to use - "Serial" for debugging, "Serial1" for bluetooth
-//#define SERIAL Serial
-#define SERIAL Serial1
+#define SERIAL Serial
+//#define SERIAL Serial1
 
 // intents
 #define INTENT_NONE 0
 #define INTENT_MAIN_MENU 1
 #define INTENT_START_REFLOW 2
+#define INTENT_CONFIGURE_PID 3

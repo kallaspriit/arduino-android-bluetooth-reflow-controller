@@ -4,12 +4,7 @@
 Owen::Owen() :
   thermocouple(THRERMO_CLK, THERMO_CS, THERMO_DO),
   relay(RELAY_PIN, RELAY_CONNECTED_LEVEL, RELAY_MIN_INTERVAL),
-  pid(),
-  /*pidP(1.0),
-  pidI(0.0),
-  pidD(0.0),
-  pidWindowSize(3000),
-  pid(&pidInput, &pidOutput, &pidSetpoint, pidP, pidI, pidD, DIRECT),*/
+  pid(PID_DEFAULT_P, PID_DEFAULT_I, PID_DEFAULT_D),
   enabled(false),
   targetTemperature(0.0f),
   timeSinceLastControl(0.0f),
@@ -17,20 +12,13 @@ Owen::Owen() :
   simulatedTemperature(20.0f),
   simulatedHeaterSpeed(0.0f)
 {
-  pid.p = 1.0f; // TODO get these from memory
-  pid.i = 0.0005f;
-  pid.d = 20.0f;
-  
-  //pid.SetOutputLimits(0, pidWindowSize);
+
 }
 
 void Owen::setEnabled(boolean enabled) {
   this->enabled = enabled;
   
-  if (enabled) {
-    //pidWindowStartTime = millis();
-    //pid.SetMode(AUTOMATIC);
-  } else {
+  if (!enabled) {
     relay.setConnected(false, true); 
   }
 }
@@ -49,6 +37,10 @@ void Owen::setTargetTemperature(float temperature) {
 
 void Owen::reset() {
   relay.reset();
+}
+
+PID* Owen::getPID() {
+  return &pid;
 }
 
 void Owen::step(float dt) {
@@ -74,28 +66,6 @@ void Owen::step(float dt) {
       //SERIAL.print("Relay connected: ");
       //SERIAL.println(relay.isConnected() ? "yes" : "no");
     }
-    
-    // todo implement PID
-    /*if (temperature < targetTemperature) {
-      setHeaterOn(true);
-    } else {
-      setHeaterOn(false);
-    }*/
-     
-    /*pidInput = temperature;
-    pidSetpoint = targetTemperature;
-     
-    pid.Compute();
-     
-    if (millis() - pidWindowStartTime > pidWindowSize) { //time to shift the Relay Window
-      pidWindowStartTime += pidWindowSize;
-    }
-    
-    if (pidOutput < millis() - pidWindowStartTime) {
-      setHeaterOn(true);
-    } else {
-      setHeaterOn(false);
-    }*/
   } else {
     setHeaterOn(false);
     relay.setConnected(false);

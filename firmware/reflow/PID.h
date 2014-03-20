@@ -3,16 +3,25 @@
 
 class PID {
   public:
-    PID() : p(1.0f), i(0.0f), d(0.0f), iLimit(-1.0f), target(0.0f), lastError(0.0f), integral(0.0f) {}
-    PID(float p, float i, float d, float iLimit = -1.0f);
+    struct Profile {
+      Profile(float p = 1.0f, float i = 0.0f, float d = 0.0f, float iLimit = -1.0f) : p(p), i(i), d(d), iLimit(iLimit) {}
+      
+      float p;
+      float i;
+      float d;
+      float iLimit;
+    };
+  
+    PID() : profile(), target(0.0f), lastError(0.0f), integral(0.0f) {}
+    PID(float p, float i, float d, float iLimit = -1.0f) : profile(p, i, d, iLimit), target(0.0f), lastError(0.0f), integral(0.0f) {}
     void setTarget(float target) { this->target = target; }
     float getValue(float feedback, float dt);
+    
+    void load();
+    void save();
     void reset();
-
-    float p;
-    float i;
-    float d;
-    float iLimit;
+    
+    Profile profile;
 
   private:
     float target;

@@ -1,28 +1,59 @@
+#include "../EEPROMex/EEPROMex.h"
+
 #include "ReflowProfile.h"
 #include "Config.h"
 
 ReflowProfile::ReflowProfile() {
-  // TODO Load from memory 
+  
+}
+
+void ReflowProfile::init() {
+  initializedAddress = EEPROM.getAddress(sizeof(byte));
+  profileAddress = EEPROM.getAddress(sizeof(Profile));
+  
+  byte isStored = EEPROM.readByte(initializedAddress);
+  
+  if (isStored != MEMORY_VERSION) {
+    initMemory(initializedAddress);
+  }
+  
+  load();
+}
+
+void ReflowProfile::initMemory(int initializedAddress) {
+  int a = EEPROM.getAddress(sizeof(float));
+  
+  EEPROM.writeByte(initializedAddress, MEMORY_VERSION);
+  
+  save();
+}
+
+void ReflowProfile::save() {
+  EEPROM.writeBlock(profileAddress, profile);
+}
+
+void ReflowProfile::load() {
+  EEPROM.readBlock(profileAddress, profile);
 }
 
 float ReflowProfile::getPreheatTime() {
-  return preheatTime * timeMultiplier;
+  return profile.preheatTime * profile.timeMultiplier;
 }
 
 float ReflowProfile::getSoakingTime() {
-  return soakingTime * timeMultiplier;
+  return profile.soakingTime * profile.timeMultiplier;
 }
 
 float ReflowProfile::getReflowTime() {
-  return reflowTime * timeMultiplier;
+  return profile.reflowTime * profile.timeMultiplier;
 }
 
 float ReflowProfile::getPeakTime() {
-  return peakTime * timeMultiplier;
+  return profile.peakTime * profile.timeMultiplier;
 }
 
 float ReflowProfile::getCoolingTime() {
-  return coolingTime * timeMultiplier;
+  return profile.coolingTime * profile.timeMultiplier;
 }
 
 float ReflowProfile::getTotalTime() {
@@ -31,23 +62,23 @@ float ReflowProfile::getTotalTime() {
 
 
 float ReflowProfile::getStartTemp() {
-  return startTemp;
+  return profile.startTemp;
 }
 
 float ReflowProfile::getPreheatTemp() {
-  return preheatTemp;
+  return profile.preheatTemp;
 }
 
 float ReflowProfile::getSoakingTemp() {
-  return soakingTemp;
+  return profile.soakingTemp;
 }
 
 float ReflowProfile::getReflowTemp() {
-  return reflowTemp;
+  return profile.reflowTemp;
 }
 
 float ReflowProfile::getCoolingTemp() {
-  return coolingTemp;
+  return profile.coolingTemp;
 }
 
 
@@ -56,24 +87,24 @@ float ReflowProfile::getTargetTempAt(float seconds) {
   float progress;
   
   if (seconds < getPreheatTime()) {
-    t1 = startTemp;
-    t2 = preheatTemp;
+    t1 = profile.startTemp;
+    t2 = profile.preheatTemp;
     progress = seconds / getPreheatTime();
   } else if (seconds < getPreheatTime() + getSoakingTime()) {
-    t1 = preheatTemp;
-    t2 = soakingTemp;
+    t1 = profile.preheatTemp;
+    t2 = profile.soakingTemp;
     progress = (seconds - getPreheatTime()) / getSoakingTime();
   } else if (seconds < getPreheatTime() + getSoakingTime() + getReflowTime()) {
-    t1 = soakingTemp;
-    t2 = reflowTemp;
+    t1 = profile.soakingTemp;
+    t2 = profile.reflowTemp;
     progress = (seconds - getPreheatTime() - getSoakingTime()) / getReflowTime();
   } else if (seconds < getPreheatTime() + getSoakingTime() + getReflowTime() + getPeakTime()) {
-    t1 = reflowTemp;
-    t2 = reflowTemp;
+    t1 = profile.reflowTemp;
+    t2 = profile.reflowTemp;
     progress = (seconds - getPreheatTime() - getSoakingTime() - getReflowTime()) / getPeakTime();
   } else {
-    t1 = reflowTemp;
-    t2 = coolingTemp;
+    t1 = profile.reflowTemp;
+    t2 = profile.coolingTemp;
     progress = (seconds - getPreheatTime() - getSoakingTime() - getReflowTime() - getPeakTime()) / getCoolingTime();
   }
 
@@ -89,14 +120,14 @@ float ReflowProfile::getNextTempAt(float seconds) {
   float progress;
   
   if (seconds < getPreheatTime()) {
-    return preheatTemp;
+    return profile.preheatTemp;
   } else if (seconds < getPreheatTime() + getSoakingTime()) {
-    return soakingTemp;
+    return profile.soakingTemp;
   } else if (seconds < getPreheatTime() + getSoakingTime() + getReflowTime()) {
-    return reflowTemp;
+    return profile.reflowTemp;
   } else if (seconds < getPreheatTime() + getSoakingTime() + getReflowTime() + getPeakTime()) {
-    return reflowTemp;
+    return profile.reflowTemp;
   } else {
-    return coolingTemp;
+    return profile.coolingTemp;
   } 
 }

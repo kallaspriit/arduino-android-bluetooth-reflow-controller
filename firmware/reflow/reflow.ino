@@ -6,24 +6,19 @@
 
 #include "MainMenuState.h"
 #include "ReflowState.h"
+#include "ConfigurePidState.h"
 
 #include "Adafruit_GFX.h"
 #include "Adafruit_PCD8544.h"
 #include "Adafruit_MAX31855.h"
-//#include "PID_v1.h"
+#include "EEPROMex.h"
 
 // runtime information
 State* state = NULL;
-State* lastState = NULL; // TODO Use stack of last states
 unsigned long lastStepTime = 0;
 String command = "";
 char commandStart = '<';
 char commandEnd = '>';
-
-int ledValue = 0; // TODO Remove
-unsigned long lastUIRenderTime = 0; // TODO Move to state
-unsigned long startTime = 0; // TODO Move to state
-int counter = 1; // TODO Move to state
 
 // display renderer
 Adafruit_PCD8544 display = Adafruit_PCD8544(SCREEN_SCLK, SCREEN_MOSI, SCREEN_DC, SCREEN_SCE, SCREEN_RST);
@@ -37,6 +32,7 @@ Owen owen = Owen();
 // states
 MainMenuState mainMenuState = MainMenuState(&display);
 ReflowState reflowState = ReflowState(&display, &owen, &profile);
+ConfigurePidState configurePidState = ConfigurePidState(&display, owen.getPID());
 
 // buttons
 Button btnUp = Button(BTN_UP, BTN_DEBOUNCE_DURATION);
@@ -49,9 +45,6 @@ void setup() {
   // setup serial
   Serial1.begin(9600);
   
-  // setup pinmodes
-  pinMode(LED_PIN, OUTPUT);
-  
   // buttons
   pinMode(BTN_UP, INPUT_PULLUP);
   pinMode(BTN_SELECT, INPUT_PULLUP);
@@ -63,11 +56,14 @@ void setup() {
   display.clearDisplay();
   display.display();
   
+  // initialize eeprom
+  EEPROM.setMemPool(0, EEPROMSizeUno);
+  
+  // initialize the reflow profile
+  profile.init();
+  
   // set starting state
   setState(mainMenuState);
-  
-  // TODO this should be set from the UI
-  startTime = millis();
 }
 
 void loop() {
@@ -137,17 +133,21 @@ void processIntent(int intent) {
     setState(mainMenuState);
   } else if (intent == INTENT_START_REFLOW) {
     setState(reflowState);
+  } else if (intent == INTENT_CONFIGURE_PID) {
+    setState(configurePidState);
   }
 }
 
 void processCommand(String command) {
-  if (command == "on") {
-    setLed(1);
-  } else if (command == "off") {
-    setLed(0);
+  if (command == "get-pid") {
+    sendPid();
+  } else {
+    SERIAL.println("Unknown command: '" + command + "'"); 
   }
-  
-  Serial1.println("Received: '" + command + "'");
+}
+
+void sendPid() {
+  SERIAL.println("{\"P\":1.0;\"I\":0.0005;\"D\":20.0}");  
 }
 
 void onKeyPress(int btn, unsigned long duration, boolean repeated) {
@@ -197,20 +197,5 @@ void setState(State& newState) {
   
   newState.onEnter();
   
-  lastState = state;
   state = &newState;
-}
-
-/*void setLastState() {
-  if (lastState == NULL) {
-    return; 
-  }
-  
-  setState(*lastState);
-  lastState = NULL;
-}*/
-
-void setLed(int value) {
-  ledValue = value;
-  digitalWrite(LED_PIN, ledValue);
 }

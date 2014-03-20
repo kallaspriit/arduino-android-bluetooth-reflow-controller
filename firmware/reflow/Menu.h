@@ -1,6 +1,8 @@
 #ifndef MENU_H
 #define MENU_H
 
+#include "Renderer.h"
+
 #include <Arduino.h>
 
 class Adafruit_PCD8544;
@@ -23,9 +25,8 @@ public:
   int itemCount;
   
 private:
-  void renderItem(String text, int index, int scrollOffset, boolean active);
-
   Adafruit_PCD8544* display;
+  Renderer renderer;
   String* items;
 };
 

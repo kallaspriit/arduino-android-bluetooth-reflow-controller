@@ -2,7 +2,7 @@
 #include "Config.h"
 #include "ReflowProfile.h"
 
-Renderer::Renderer(Adafruit_PCD8544* display, ReflowProfile* profile) : display(display), profile(profile) {}
+Renderer::Renderer(Adafruit_PCD8544* display) : display(display) {}
 
 void Renderer::renderTextCentered(int x, int y, String text, boolean large, int color, int width) {
   if (width <= 0) {
@@ -20,7 +20,7 @@ void Renderer::renderTextCentered(int x, int y, String text, boolean large, int 
   display->print(text);
 }
 
-void Renderer::renderProfile(int posX, int posY, int windowWidth, int windowHeight, int elapsed, int* realTemperatures) {
+void Renderer::renderProfile(int posX, int posY, int windowWidth, int windowHeight, int elapsed, ReflowProfile* profile, int* realTemperatures) {
   float pixelsPerSecond = (float)windowWidth / (float)profile->getTotalTime();
   float pixelsPerDegree = (float)windowHeight / (float)profile->getReflowTemp();
   
@@ -52,4 +52,22 @@ void Renderer::renderProfile(int posX, int posY, int windowWidth, int windowHeig
       //display->drawPixel(x, startY - dy, WHITE);
     }
   } 
+}
+
+void Renderer::renderTextRow(String text, int index, int scrollOffset, int color, int lineHeight, int yOffset) {
+  int textHeight = 7;
+  int padding = (lineHeight - textHeight) / 2;
+  int rowX = 0;
+  int rowY = lineHeight * index - scrollOffset * lineHeight + yOffset;
+
+  if (color == WHITE) {
+    display->fillRect(0, rowY, display->width() - 1, lineHeight, BLACK);
+    display->setTextColor(WHITE);
+  } else {
+    display->setTextColor(BLACK);
+  }
+  
+  display->setCursor(rowX + 3, rowY + padding);
+  display->println(text);
+  display->setTextColor(BLACK);
 }

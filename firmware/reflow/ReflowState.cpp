@@ -9,7 +9,7 @@
 ReflowState::ReflowState(Adafruit_PCD8544* display, Owen* owen, ReflowProfile* profile) :
   display(display),
   owen(owen),
-  renderer(display, profile),
+  renderer(display),
   profile(profile),
   reflowDuration(0.0f),
   reflowing(false),
@@ -68,7 +68,7 @@ int ReflowState::step(float dt) {
     if (confirmExitTimeout != 0.0f) {
       renderConfirmExit(confirmExitTimeout);
     } else {
-      renderer.renderProfile(0, 19, display->width(), display->height() - 19, reflowDuration, realTemperatures);
+      renderer.renderProfile(0, 19, display->width(), display->height() - 19, reflowDuration, profile, realTemperatures);
       
       if (!reflowing) {
         renderer.renderTextCentered(0, 0, "Done!", true);
