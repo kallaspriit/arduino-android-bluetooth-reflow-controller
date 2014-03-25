@@ -67,6 +67,7 @@ void Renderer::renderTextRow(String text, int index, int scrollOffset, int color
     display->setTextColor(BLACK);
   }
   
+  display->setTextSize(1);
   display->setCursor(rowX + 3, rowY + padding);
   display->println(text);
   display->setTextColor(BLACK);

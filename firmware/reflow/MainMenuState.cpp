@@ -13,7 +13,6 @@
 
 MainMenuState::MainMenuState(Adafruit_PCD8544* display) :
   display(display),
-  itemCount(6),
   items({
     ACTION_START_REFLOW,
     ACTION_PICK_PROFILE,

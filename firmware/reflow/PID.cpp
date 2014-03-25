@@ -70,6 +70,33 @@ float PID::getValue(float feedback, float dt) {
   return pidValue;
 }
 
+void PID::init() {
+  initializedAddress = EEPROM.getAddress(sizeof(byte));
+  profileAddress = EEPROM.getAddress(sizeof(Profile));
+  
+  byte isStored = EEPROM.readByte(initializedAddress);
+  
+  if (isStored != MEMORY_VERSION) {
+    initMemory(initializedAddress);
+  }
+  
+  load();
+}
+
+void PID::initMemory(int initializedAddress) {
+  EEPROM.writeByte(initializedAddress, MEMORY_VERSION);
+  
+  save();
+}
+
+void PID::save() {
+  EEPROM.writeBlock(profileAddress, profile);
+}
+
+void PID::load() {
+  EEPROM.readBlock(profileAddress, profile);
+}
+
 void PID::reset() {
   integral = 0.0f;
   lastError = 0.0f;

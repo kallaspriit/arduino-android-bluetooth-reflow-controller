@@ -2,11 +2,25 @@ if (!window.native) {
 	window.native = {
 		getPairedDevices: function() {
 			return JSON.stringify(['Dummy']);
+		},
+		sendMessage: function(message) {
+			console.log('send message', message);
 		}
 	}
 }
 
-var connectedDeviceName = null;
+var Intent = {
+		NONE: 0,
+		MAIN_MENU: 1,
+		START_REFLOW: 2,
+		CONFIGURE_PID: 3
+	},
+	connectedDeviceName = null,
+	currentBluetoothState = null,
+	lastBluetoothState = null,
+	currentApplicationState = null,
+	lastApplicationState = null,
+	currentView = null;
 
 function log(message) {
     var wrap = $('#log');
@@ -24,6 +38,7 @@ function bootstrap() {
 
     setupControls();
     setupMainMenu();
+    setupPidConfiguration();
     setupConsole();
     updateDevices();
 
@@ -32,12 +47,12 @@ function bootstrap() {
 
 function setupControls() {
     var actions = {
-        ledOn: function() {
-            native.sendMessage('<on>');
+        startReflow: function() {
+            sendIntent(Intent.START_REFLOW);
         },
-        ledOff: function() {
-            native.sendMessage('<off>');
-        }
+	    stopReflow: function() {
+		    sendIntent(Intent.MAIN_MENU);
+	    }
     };
 
     $('.action-btn').each(function() {
@@ -57,6 +72,12 @@ function setupMainMenu() {
 
         showView(viewName);
     });
+}
+
+function setupPidConfiguration() {
+	$('.pid-parameter').change(function() {
+		sendPidValues();
+	});
 }
 
 function setupConsole() {
@@ -83,12 +104,69 @@ function setupConsole() {
     });
 }
 
+function sendRequest(type, data) {
+	native.sendMessage('<' + JSON.stringify({
+		type: type,
+		data: data || {}
+	}) + '>');
+}
+
+function sendIntent(intent) {
+	sendRequest('intent', {intent: intent});
+}
+
 function showView(name) {
+	var viewMethodName = 'show' + convertActionName(name) + 'View';
+
+	if (typeof(window[viewMethodName]) === 'function') {
+		window[viewMethodName]();
+	}
+
     $('.view').hide();
     $('.view[data-name=' + name + ']').show();
 
     $('#main-menu > LI').removeClass('active');
     $('#main-menu > LI[data-view=' + name + ']').addClass('active');
+
+	currentView = name;
+}
+
+function updateView() {
+	if (currentView === null) {
+		return;
+	}
+
+	showView(currentView);
+}
+
+function showPidView() {
+	sendRequest('get-pid');
+
+	if (currentApplicationState === 'main-menu') {
+		sendIntent(Intent.CONFIGURE_PID);
+	}
+}
+
+function showReflowView() {
+	if (currentApplicationState === 'reflow') {
+		$('#start-reflow-btn').hide();
+		$('#stop-reflow-btn').show();
+	} else {
+		$('#start-reflow-btn').show();
+		$('#stop-reflow-btn').hide();
+	}
+}
+
+function sendPidValues() {
+	var p = parseFloat($('#pid-p').val()),
+		i = parseFloat($('#pid-i').val()),
+		d = parseFloat($('#pid-d').val());
+
+	sendRequest('set-pid', {
+		p: p,
+		i: i,
+		d: d
+	});
 }
 
 function updateDevices() {
@@ -112,6 +190,37 @@ function updateDevices() {
     });
 }
 
+function handleRequest(request) {
+	switch (request.type) {
+		case 'pid':
+			handlePidRequest(request.data);
+		break;
+
+		case 'state-changed':
+			handleStateChangedRequest(request.data);
+		break;
+	}
+}
+
+function handlePidRequest(data) {
+	$('#pid-p').val(parseFloat(data.p));
+	$('#pid-i').val(parseFloat(data.i));
+	$('#pid-d').val(parseFloat(data.d));
+}
+
+function handleStateChangedRequest(data) {
+	lastApplicationState = currentApplicationState;
+	currentApplicationState = data.name;
+
+	if (lastApplicationState !== null) {
+		$(document.body).removeClass('state-' + lastApplicationState.toLowerCase());
+	}
+
+	$(document.body).addClass('state-' + currentApplicationState.toLowerCase());
+
+	updateView();
+}
+
 function showConsole(deviceName) {
     showView('console');
 }
@@ -125,6 +234,16 @@ function appendConsole(type, message) {
         'scrollTop',
         wrap.prop('scrollHeight')
     );
+}
+
+function convertActionName(name) {
+	var dashPos;
+
+	while ((dashPos = name.indexOf('-')) != -1) {
+		name = name.substr(0, dashPos) + (name.substr(dashPos + 1, 1)).toUpperCase() + name.substr(dashPos + 2);
+	}
+
+	return name.substr(0, 1).toUpperCase() + name.substr(1);
 }
 
 function onBluetoothReady() {
@@ -146,13 +265,48 @@ function onBluetoothConnected(deviceName) {
 function onBluetoothStateChanged(newState) {
     log('Bluetooth state changed to: ' + newState);
 
+	lastBluetoothState = currentBluetoothState;
+	currentBluetoothState = newState;
+
+	if (currentBluetoothState !== 'connected') {
+		connectedDeviceName = null;
+	}
+
 	$('#state').html(newState);
+
+	if (lastBluetoothState !== null) {
+		$(document.body).removeClass('state-' + lastBluetoothState.toLowerCase());
+	}
+
+	$(document.body).addClass('state-' + currentBluetoothState.toLowerCase());
+
+	if (currentBluetoothState.toLowerCase() === 'connected') {
+		sendRequest('get-state');
+	}
+
+	updateDevices();
 }
 
 function onBluetoothMessageReceived(message) {
     log('Bluetooth message received: ' + message);
 
     appendConsole('rx', '< ' + message);
+
+	if (message.substr(0, 1) === '{') {
+		var parsedMessage;
+
+		try {
+			parsedMessage = JSON.parse(message);
+		} catch (e) {
+			appendConsole('error', '@ Parsing message "' + message + '" failed');
+		}
+
+		try {
+			handleRequest(parsedMessage);
+		} catch (e) {
+			appendConsole('error', '@ Handling request for "' + JSON.stringify(parsedMessage) + '" failed');
+		}
+	}
 }
 
 function onBluetoothMessageSent(message) {

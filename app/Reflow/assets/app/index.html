@@ -11,8 +11,9 @@
     <div id="log"></div>
     <ul id="main-menu" class="tabs">
         <li class="active" data-view="device-choice">Devices</li>
-        <li data-view="console">Console</li>
-        <li data-view="controls">Controls</li>
+	    <li class="requires-state require-state-connected" data-view="reflow">Reflow</li>
+        <li class="requires-state require-state-connected" data-view="pid">PID</li>
+	    <li class="requires-state require-state-connected" data-view="console">Console</li>
     </ul>
     <div id="views">
         <div class="view" data-name="loading">
@@ -30,13 +31,37 @@
             <div class="placeholder" id="user-message" contenteditable="true">send message</div>
             <div id="send-message-btn"></div>
         </div>
-        <div class="view" data-name="controls">
-	        <div class="container">
-	            <h1>Controls</h1>
-	            <button class="action-btn btn btn-default" data-action="ledOn">ON</button>
-	            <button class="action-btn btn btn-default" data-action="ledOff">OFF</button>
+	    <div class="view" data-name="pid">
+		    <div class="container">
+			    <h1>PID</h1>
+			    <div class="form-group">
+				    <label for="pid-p">Proportional component</label>
+				    <input class="form-control pid-parameter" type="number" step="0.1" min="0" id="pid-p" placeholder="Proportional"/>
+			    </div>
+			    <div class="form-group">
+				    <label for="pid-i">Integral component</label>
+				    <input class="form-control pid-parameter" type="number" step="0.0001" min="0" id="pid-i" placeholder="Integral"/>
+			    </div>
+			    <div class="form-group">
+				    <label for="pid-d">Derivative component</label>
+				    <input class="form-control pid-parameter" type="number" step="0.1" min="0" id="pid-d" placeholder="Derivative"/>
+			    </div>
+			    <!--<div class="form-group">
+				    <button class="btn btn-primary action-btn" data-action="savePid">Save</button>
+				    <button class="btn btn-default action-btn" data-action="resetPid">Reset</button>
+			    </div>-->
 		    </div>
-        </div>
+	    </div>
+        <div class="view" data-name="reflow">
+	        <div class="container">
+	            <h1>Reflow</h1>
+		        <div id="chart"></div>
+		    </div>
+	        <div class="btn-bottom">
+	            <button id="start-reflow-btn" class="action-btn btn btn-primary btn-block btn-lg" data-action="startReflow">Start Reflow</button>
+	            <button id="stop-reflow-btn" class="action-btn btn btn-danger btn-block btn-lg" data-action="stopReflow">Stop Reflow</button>
+	        </div>
+	    </div>
     </div>
     <script src="lib/jquery-2.1.0.min.js"></script>
     <script src="lib/bootstrap/js/bootstrap.min.js"></script>

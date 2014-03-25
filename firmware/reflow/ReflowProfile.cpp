@@ -21,8 +21,6 @@ void ReflowProfile::init() {
 }
 
 void ReflowProfile::initMemory(int initializedAddress) {
-  int a = EEPROM.getAddress(sizeof(float));
-  
   EEPROM.writeByte(initializedAddress, MEMORY_VERSION);
   
   save();

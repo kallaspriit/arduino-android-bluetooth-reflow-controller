@@ -14,6 +14,7 @@ class PID {
   
     PID() : profile(), target(0.0f), lastError(0.0f), integral(0.0f) {}
     PID(float p, float i, float d, float iLimit = -1.0f) : profile(p, i, d, iLimit), target(0.0f), lastError(0.0f), integral(0.0f) {}
+    void init();
     void setTarget(float target) { this->target = target; }
     float getValue(float feedback, float dt);
     
@@ -24,10 +25,15 @@ class PID {
     Profile profile;
 
   private:
+    void initMemory(int initializedAddress);
+  
     float target;
     float lastError;
     float integral;
     unsigned long counter;
+    
+    int initializedAddress;
+    int profileAddress;
 };
 
 #endif // PID_H

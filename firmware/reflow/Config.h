@@ -40,8 +40,8 @@
 #define SIMULATION_MAX_COOLING_SPEED -1.5f
 
 // choose which serial to use - "Serial" for debugging, "Serial1" for bluetooth
-#define SERIAL Serial
-//#define SERIAL Serial1
+//#define SERIAL Serial
+#define SERIAL Serial1
 
 // intents
 #define INTENT_NONE 0

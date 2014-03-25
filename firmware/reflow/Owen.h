@@ -15,6 +15,7 @@ public:
   
   float getTemperature();
   
+  void init();
   void setEnabled(boolean enabled);
   void setHeaterOn(boolean enabled);
   void setSimulationMode(boolean enabled);

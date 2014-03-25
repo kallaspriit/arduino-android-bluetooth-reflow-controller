@@ -15,6 +15,10 @@ Owen::Owen() :
 
 }
 
+void Owen::init() {
+  pid.init(); 
+}
+
 void Owen::setEnabled(boolean enabled) {
   this->enabled = enabled;
   

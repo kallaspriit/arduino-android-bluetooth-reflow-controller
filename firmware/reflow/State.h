@@ -6,6 +6,7 @@
 class State {
 
 public:
+  virtual char* getName() = 0;
   virtual int step(float dt) {}
   virtual void onEnter() {}
   virtual void onExit() {}

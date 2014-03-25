@@ -41,12 +41,12 @@ A {
     position: absolute;
     left: 0;
     right: 0;
-    top: 60px;
+    top: 50px;
     bottom: 0;
     background-color: #FFF;
 }
 .show-log #views {
-    top: 160px;
+    top: 140px;
 }
 .view {
     position: relative;
@@ -71,8 +71,8 @@ A {
 	margin: 0 -20px;
 }
 .list > LI {
-	height: 60px;
-	line-height: 60px;
+	height: 50px;
+	line-height: 50px;
 	padding: 0 20px;
 	border-bottom: 1px solid #EEE;
 	background-color: #F8F8F8;
@@ -82,16 +82,25 @@ A {
 	border-top: 1px solid #EEE;
 }
 
+/* State based visibility */
+.requires-state {
+	display: none;
+}
+.state-connected .require-state-connected {
+	display: block;
+}
+
+
 /* Tabs */
 .tabs {
-    height: 60px;
+    height: 50px;
     background-color: #333;
 }
 .tabs > LI {
     float: left;
-    height: 60px;
-    line-height: 60px;
-    padding: 0 20px;
+    height: 50px;
+    line-height: 50px;
+    padding: 0 15px;
     font-size: 20px;
     color: #FFF;
 }
@@ -136,7 +145,7 @@ A {
     top: 0;
     left: 0;
     right: 0;
-    bottom: 60px;
+    bottom: 50px;
     font-family: Consolas;
     overflow: hidden;
     overflow-y: auto;
@@ -144,21 +153,24 @@ A {
 #message-list > LI {
     padding: 0 10px;
 }
+#message-list > LI.error {
+	color: #900;
+}
 #message-list > LI.rx {
     color: #090;
 }
 #message-list > LI.tx {
-    color: #900;
+    color: #009;
 }
 #user-message {
     position: absolute;
     left: 0;
-    right: 60px;
+    right: 50px;
     bottom: 0;
     box-sizing: border-box;
-    height: 60px;
+    height: 50px;
     padding: 0 10px;
-    line-height: 60px;
+    line-height: 50px;
     background-color: #333;
     font-size: 30px;
     font-family: Consolas;
@@ -173,7 +185,21 @@ A {
     position: absolute;
     right: 0;
     bottom: 0;
-    height: 60px;
-    width: 60px;
+    height: 50px;
+    width: 50px;
     background: #333 url(images/send-icon.png) no-repeat center center;
+}
+
+/* Chart */
+#chart {
+	height: 50%;
+	background-color: #F8F8F8;
+}
+
+/* Various */
+.btn-bottom {
+	position: absolute;
+	bottom: 10px;
+	left: 10px;
+	right: 10px;
 }
