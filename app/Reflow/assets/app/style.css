@@ -109,6 +109,20 @@ A {
     color: #333;
 }
 
+/* Header and footer */
+.header {
+	background-color: #333;
+	height: 50px;
+}
+.footer {
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	height: 30px;
+	background-color: #333;
+}
+
 /* Main menu */
 #main-menu {
     position: absolute;
@@ -165,12 +179,12 @@ A {
 #user-message {
     position: absolute;
     left: 0;
-    right: 50px;
-    bottom: 0;
+    right: 60px;
+    bottom: 31px;
     box-sizing: border-box;
-    height: 50px;
+    height: 60px;
     padding: 0 10px;
-    line-height: 50px;
+    line-height: 60px;
     background-color: #333;
     font-size: 30px;
     font-family: Consolas;
@@ -184,22 +198,26 @@ A {
 #send-message-btn {
     position: absolute;
     right: 0;
-    bottom: 0;
-    height: 50px;
-    width: 50px;
+    bottom: 31px;
+    height: 60px;
+    width: 60px;
     background: #333 url(images/send-icon.png) no-repeat center center;
 }
 
 /* Chart */
 #chart {
-	height: 50%;
+	position: absolute;
+	top: 70px;
+	left: 10px;
+	right: 10px;
+	bottom: 100px;
 	background-color: #F8F8F8;
 }
 
 /* Various */
 .btn-bottom {
 	position: absolute;
-	bottom: 10px;
+	bottom: 40px;
 	left: 10px;
 	right: 10px;
 }

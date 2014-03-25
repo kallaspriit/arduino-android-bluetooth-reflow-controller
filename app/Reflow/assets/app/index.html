@@ -9,12 +9,16 @@
 </head>
 <body>
     <div id="log"></div>
-    <ul id="main-menu" class="tabs">
-        <li class="active" data-view="device-choice">Devices</li>
-	    <li class="requires-state require-state-connected" data-view="reflow">Reflow</li>
-        <li class="requires-state require-state-connected" data-view="pid">PID</li>
-	    <li class="requires-state require-state-connected" data-view="console">Console</li>
-    </ul>
+	<div class="header">
+		<div class="container">
+			<ul id="main-menu" class="tabs">
+				<li class="active" data-view="device-choice">Devices</li>
+				<li class="requires-state require-state-connected" data-view="reflow">Reflow</li>
+				<li class="requires-state require-state-connected" data-view="pid">PID</li>
+				<li class="requires-state require-state-connected" data-view="console">Console</li>
+			</ul>
+		</div>
+	</div>
     <div id="views">
         <div class="view" data-name="loading">
             loading..
@@ -23,13 +27,14 @@
 	        <div class="container">
                 <h1>Pick device</h1>
                 <ul class="list" id="paired-devices-list"></ul>
-		        <div id="state" class="status-bar">LOADING</div>
 	        </div>
         </div>
         <div class="view" data-name="console">
-            <ul id="message-list"></ul>
-            <div class="placeholder" id="user-message" contenteditable="true">send message</div>
-            <div id="send-message-btn"></div>
+			<div class="container">
+				<ul id="message-list"></ul>
+			</div>
+			<div class="placeholder" id="user-message" contenteditable="true">send message</div>
+			<div id="send-message-btn"></div>
         </div>
 	    <div class="view" data-name="pid">
 		    <div class="container">
@@ -56,13 +61,18 @@
 	        <div class="container">
 	            <h1>Reflow</h1>
 		        <div id="chart"></div>
+				<div class="btn-bottom">
+					<button id="start-reflow-btn" class="action-btn btn btn-primary btn-block btn-lg" data-action="startReflow">Start Reflow</button>
+					<button id="stop-reflow-btn" class="action-btn btn btn-danger btn-block btn-lg" data-action="stopReflow">Stop Reflow</button>
+				</div>
 		    </div>
-	        <div class="btn-bottom">
-	            <button id="start-reflow-btn" class="action-btn btn btn-primary btn-block btn-lg" data-action="startReflow">Start Reflow</button>
-	            <button id="stop-reflow-btn" class="action-btn btn btn-danger btn-block btn-lg" data-action="stopReflow">Stop Reflow</button>
-	        </div>
 	    </div>
     </div>
+	<div class="footer">
+		<div class="container">
+			<div class="status-bar"><span id="bluetooth-state">initializing</span> » <span id="application-state">not connected</span></div>
+		</div>
+	</div>
     <script src="lib/jquery-2.1.0.min.js"></script>
     <script src="lib/bootstrap/js/bootstrap.min.js"></script>
     <script src="main.js"></script>

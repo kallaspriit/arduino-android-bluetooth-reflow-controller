@@ -14,6 +14,13 @@ class Menu;
 class ReflowState : public State {
 
 public:
+  struct StateInfo {
+    float duration;
+    float currentTemperature;
+    float targetTemperature;
+    boolean reflowing;
+  };
+
   ReflowState(Adafruit_PCD8544* display, Owen* owen, ReflowProfile* profile);
   
   char* getName() { return "reflow"; }
@@ -21,6 +28,8 @@ public:
   void onEnter();
   void onExit();
   void onKeyPress(int btn, unsigned long duration, boolean repeated);
+  
+  aJsonObject* getStateInfo();
   
 private:
   void renderTemperatures(int sensorTemp, int targetTemp);
@@ -31,6 +40,7 @@ private:
   Owen* owen;
   ReflowProfile* profile;
   Renderer renderer;
+  StateInfo stateInfo;
   
   float reflowDuration;
   boolean reflowing;

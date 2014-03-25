@@ -20,7 +20,8 @@ var Intent = {
 	lastBluetoothState = null,
 	currentApplicationState = null,
 	lastApplicationState = null,
-	currentView = null;
+	currentView = null,
+	reflowInfo = null;
 
 function log(message) {
     var wrap = $('#log');
@@ -155,6 +156,8 @@ function showReflowView() {
 		$('#start-reflow-btn').show();
 		$('#stop-reflow-btn').hide();
 	}
+
+	$('#chart').html(JSON.stringify(reflowInfo));
 }
 
 function sendPidValues() {
@@ -199,6 +202,10 @@ function handleRequest(request) {
 		case 'state-changed':
 			handleStateChangedRequest(request.data);
 		break;
+
+		case 'reflow-info':
+			handleReflowInfoRequest(request.data);
+		break;
 	}
 }
 
@@ -218,7 +225,17 @@ function handleStateChangedRequest(data) {
 
 	$(document.body).addClass('state-' + currentApplicationState.toLowerCase());
 
+	$('#application-state').html(currentApplicationState);
+
 	updateView();
+}
+
+function handleReflowInfoRequest(data) {
+	reflowInfo = data;
+
+	if (currentView === 'reflow') {
+		updateView();
+	}
 }
 
 function showConsole(deviceName) {
@@ -272,7 +289,7 @@ function onBluetoothStateChanged(newState) {
 		connectedDeviceName = null;
 	}
 
-	$('#state').html(newState);
+	$('#bluetooth-state').html(newState.toLowerCase());
 
 	if (lastBluetoothState !== null) {
 		$(document.body).removeClass('state-' + lastBluetoothState.toLowerCase());
