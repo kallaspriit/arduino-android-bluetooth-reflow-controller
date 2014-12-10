@@ -17,16 +17,17 @@
 
 // relay
 #define RELAY_PIN 20
-#define RELAY_CONNECTED_LEVEL LOW
+#define RELAY_CONNECTED_LEVEL HIGH
 #define RELAY_MIN_INTERVAL 3.0f // minimum pause between relay switching states
 
 // configuration
-#define SIMUALATION_MODE true // if this is set true, a dummy simulated owen is used instead of the real thermocouple
+#define SIMUALATION_MODE false // if this is set true, a dummy simulated owen is used instead of the real thermocouple
 #define TIME_MULTIPLIER 1.0f // increase this to for example to 20.0f to make the time pass faster for simulation
 #define BTN_DEBOUNCE_DURATION 10
 #define BTN_REPEAT_INTERVAL 300
 #define PROFILE_MAX_DURATION 3600 // 60 minutes storage for graph, make sure your profile is not longer
-#define MEMORY_VERSION 2 // update this every time the memory footprint changes
+#define MEMORY_VERSION 3 // update this every time the memory footprint changes
+#define PREHEAT_TEMPERATURE 80
 
 // PID
 #define PID_DEFAULT_P 1.0f

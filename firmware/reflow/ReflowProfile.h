@@ -1,6 +1,8 @@
 #ifndef REFLOWPROFILE_H
 #define REFLOWPROFILE_H
 
+#include "Config.h"
+
 class ReflowProfile {
 
 public:
@@ -14,7 +16,7 @@ public:
     float coolingTime = 2.0f * 60.0f;
     
     // temperatures
-    float startTemp = 25.0f; // TODO internal temp
+    float startTemp = PREHEAT_TEMPERATURE;
     float preheatTemp = 150.0f;
     float soakingTemp = 170.0f;
     float reflowTemp = 240.0f;

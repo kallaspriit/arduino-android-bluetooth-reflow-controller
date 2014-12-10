@@ -26,12 +26,12 @@ ReflowState::ReflowState(Adafruit_PCD8544* display, Owen* owen, ReflowProfile* p
 int ReflowState::step(float dt) {
   float sensorTemp = owen->getTemperature();
   float targetTemp = profile->getTargetTempAt(reflowDuration);
-  //float nextTemp = profile->getNextTempAt(reflowDuration);
   int progressPercentage = reflowDuration * 100 / profile->getTotalTime();
   float totalTime = profile->getTotalTime();
   unsigned long currentTime = millis();
+  boolean preheating = sensorTemp < PREHEAT_TEMPERATURE && reflowing;
   
-  if (reflowing) {
+  if (reflowing && !preheating) {
     reflowDuration += dt; // test for faster progress
     realTemperatures[(int)reflowDuration] = sensorTemp;
   }
@@ -41,10 +41,15 @@ int ReflowState::step(float dt) {
     reflowDuration = totalTime;
   }
   
-  owen->setEnabled(reflowing);
-  //owen->setTargetTemperature(nextTemp);
-  owen->setTargetTemperature(targetTemp);
-  owen->step(dt);
+  if (preheating) {
+    owen->setEnabled(true);
+    owen->setTargetTemperature(250);
+  } else {
+    owen->setEnabled(reflowing);
+    owen->setTargetTemperature(targetTemp);
+  }
+  
+  owen->step(dt);  
   
   // update confirmation timer
   if (confirmExitTimeout != 0.0f) {
@@ -75,6 +80,9 @@ int ReflowState::step(float dt) {
       if (!reflowing) {
         renderer.renderTextCentered(0, 0, "Done!", true);
         renderer.renderTextCentered(0, 32, (int)sensorTemp, true, WHITE);
+      } else if (preheating) {
+        renderer.renderTextCentered(0, 0, "Preheat", true);
+        renderer.renderTextCentered(0, 32, (int)sensorTemp, true);
       } else {
         if (profileInfoIndex == 0) {
           renderTemperatures(sensorTemp, targetTemp);
