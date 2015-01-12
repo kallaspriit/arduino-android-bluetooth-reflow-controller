@@ -1,0 +1,3 @@
+Layer Pairs Export File for PCB: C:\projects\reflow\electronics\reflow.PcbDoc
+LayersSetName=Top_Bot_Thru_Holes|DrillFile=reflow-roundholes.txt|LayerPairs=gtl,gbl
+LayersSetName=Top_Bot_Slot_Holes|DrillFile=reflow-slotholes.txt|LayerPairs=gtl,gbl
