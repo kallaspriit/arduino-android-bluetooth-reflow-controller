@@ -35,31 +35,31 @@ float PID::getValue(float feedback, float dt) {
 
   /*
   //if (counter % 100 == 0) {
-    SERIAL.print("Target: ");
-    SERIAL.print(target);
-    SERIAL.print(", actual: ");
-    SERIAL.print(feedback);
-    SERIAL.print(", error: ");
-    SERIAL.print(error);
-    SERIAL.print(", lastError: ");
-    SERIAL.print(lastError);
-    SERIAL.print(", errorDiff: ");
-    SERIAL.print(errorDiff);
-    SERIAL.print(", p: ");
-    SERIAL.print(pValue);
-    SERIAL.print(", i: ");
-    SERIAL.print(iValue);
-    SERIAL.print(", d: ");
-    SERIAL.print(dValue);
-    SERIAL.print(", output: ");
-    SERIAL.print(pidValue);
-    SERIAL.print(", derivative: ");
-    SERIAL.print(derivative);
-    SERIAL.print(", integral: ");
-    SERIAL.print(integral);
-    SERIAL.print(", dt: ");
-    SERIAL.print(dt);
-    SERIAL.println();
+    COMM.print("Target: ");
+    COMM.print(target);
+    COMM.print(", actual: ");
+    COMM.print(feedback);
+    COMM.print(", error: ");
+    COMM.print(error);
+    COMM.print(", lastError: ");
+    COMM.print(lastError);
+    COMM.print(", errorDiff: ");
+    COMM.print(errorDiff);
+    COMM.print(", p: ");
+    COMM.print(pValue);
+    COMM.print(", i: ");
+    COMM.print(iValue);
+    COMM.print(", d: ");
+    COMM.print(dValue);
+    COMM.print(", output: ");
+    COMM.print(pidValue);
+    COMM.print(", derivative: ");
+    COMM.print(derivative);
+    COMM.print(", integral: ");
+    COMM.print(integral);
+    COMM.print(", dt: ");
+    COMM.print(dt);
+    COMM.println();
   //}
   */
   

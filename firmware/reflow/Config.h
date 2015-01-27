@@ -1,19 +1,42 @@
-// thermocouple
-#define THERMO_DO 12
-#define THERMO_CS 10
-#define THRERMO_CLK 13
+// board version selection
+#define REFLOW_BOARD_V1
+//#define REFLOW_BOARD_V2
 
-// PCD8544 Nokia screen
-#define SCREEN_SCLK 13 // clock
-#define SCREEN_MOSI 11 // data out
-#define SCREEN_DC 16 // data/command select
-#define SCREEN_SCE 14 // chip select
-#define SCREEN_RST 15 // reset
-
-// buttons
-#define BTN_UP 17
-#define BTN_SELECT 18
-#define BTN_DOWN 19
+#if defined(REFLOW_BOARD_V1)
+  // thermocouple
+  #define THERMO_DO 12   // data
+  #define THERMO_CS 10   // chip-select
+  #define THRERMO_CLK 13 // clock
+  
+  // PCD8544 Nokia screen
+  #define SCREEN_SCLK 13 // clock
+  #define SCREEN_MOSI 11 // data out
+  #define SCREEN_DC 16   // data/command select
+  #define SCREEN_SCE 14  // chip select
+  #define SCREEN_RST 15  // reset
+  
+  // buttons
+  #define BTN_UP 17
+  #define BTN_SELECT 18
+  #define BTN_DOWN 19
+#elif defined(REFLOW_BOARD_V2)
+  // thermocouple
+  #define THERMO_DO 12   // data
+  #define THERMO_CS 10   // chip-select
+  #define THRERMO_CLK 13 // clock
+  
+  // PCD8544 Nokia screen
+  #define SCREEN_SCLK PCINT1 // clock
+  #define SCREEN_MOSI PCINT2 // data out
+  #define SCREEN_DC 8   // data/command select
+  #define SCREEN_SCE 4  // chip select
+  #define SCREEN_RST 7  // reset
+  
+  // buttons
+  #define BTN_UP A0
+  #define BTN_SELECT A1
+  #define BTN_DOWN A2
+#endif
 
 // relay
 #define RELAY_PIN 20
@@ -42,7 +65,7 @@
 
 // choose which serial to use - "Serial" for debugging, "Serial1" for bluetooth
 //#define SERIAL Serial
-#define SERIAL Serial1
+#define COMM Serial1
 
 // intents
 #define INTENT_NONE 0

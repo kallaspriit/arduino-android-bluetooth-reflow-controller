@@ -8,19 +8,19 @@ class ReflowProfile {
 public:
   struct Profile {
     // timing
-    float timeMultiplier = 3.0f;
-    float preheatTime = 1.5f * 60.0f; // TODO use memory
-    float soakingTime = 1.5f * 60.0f;
-    float reflowTime = 1.5f * 60.0f;
-    float peakTime = 20;
-    float coolingTime = 2.0f * 60.0f;
+    float timeMultiplier;
+    float preheatTime; // TODO use memory
+    float soakingTime;
+    float reflowTime;
+    float peakTime;
+    float coolingTime;
     
     // temperatures
-    float startTemp = PREHEAT_TEMPERATURE;
-    float preheatTemp = 150.0f;
-    float soakingTemp = 170.0f;
-    float reflowTemp = 240.0f;
-    float coolingTemp = 100.0f;
+    float startTemp;
+    float preheatTemp;
+    float soakingTemp;
+    float reflowTemp;
+    float coolingTemp;
   };
 
   ReflowProfile();

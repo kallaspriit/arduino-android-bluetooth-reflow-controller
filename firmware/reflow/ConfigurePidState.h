@@ -14,7 +14,7 @@ class ConfigurePidState : public State {
 public:
   ConfigurePidState(Adafruit_PCD8544* display, PID* pid);
   
-  char* getName() { return "configure-pid"; }
+  const char* getName() { return "configure-pid"; }
   int step(float dt);
   void onKeyPress(int btn, unsigned long duration, boolean repeated);
   

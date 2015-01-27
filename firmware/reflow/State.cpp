@@ -21,9 +21,9 @@ void State::sendStateInfo() {
     return; 
   }
   
-  aJsonStream serialStream(&SERIAL);
+  aJsonStream serialStream(&COMM);
   
   aJson.print(msg, &serialStream);
-  SERIAL.println();
+  COMM.println();
   aJson.deleteItem(msg); 
 }

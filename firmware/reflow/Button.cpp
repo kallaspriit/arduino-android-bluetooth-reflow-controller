@@ -1,7 +1,8 @@
 
 // Please read Button.h for information about the liscence and authors
 
-#include <WProgram.h>
+//#include <WProgram.h>
+//#include <Arduino.h>
 #include "Button.h"
 
 

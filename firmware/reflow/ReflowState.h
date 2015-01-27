@@ -23,7 +23,7 @@ public:
 
   ReflowState(Adafruit_PCD8544* display, Owen* owen, ReflowProfile* profile);
   
-  char* getName() { return "reflow"; }
+  const char* getName() { return "reflow"; }
   int step(float dt);
   void onEnter();
   void onExit();

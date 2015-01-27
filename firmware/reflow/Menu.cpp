@@ -3,9 +3,9 @@
 #include "Adafruit_GFX.h"
 #include "Adafruit_PCD8544.h"
 
-/*Menu::Menu(Adafruit_PCD8544* display) : display(display), items(NULL), itemCount(0), activeIndex(0) {
+Menu::Menu(Adafruit_PCD8544* display) : display(display), renderer(display), items(NULL), itemCount(0), activeIndex(0) {
 
-}*/
+}
 
 Menu::Menu(Adafruit_PCD8544* display, String* items, int itemCount) : display(display), renderer(display), items(items), itemCount(itemCount), activeIndex(0) {
 

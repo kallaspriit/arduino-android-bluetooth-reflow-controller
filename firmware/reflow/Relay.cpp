@@ -35,15 +35,15 @@ void Relay::reset() {
 }
 
 void Relay::step(float dt) {
-  /*SERIAL.print("currentState: ");
-  SERIAL.print(currentState ? "on" : "off");
-  SERIAL.print(", requested: ");
-  SERIAL.print(requestedState ? "on" : "off");
-  SERIAL.print(", since last: ");
-  SERIAL.print(timeSinceLastSwitch);
-  SERIAL.print(", pause: ");
-  SERIAL.print(minSwitchingPause);
-  SERIAL.println();
+  /*COMM.print("currentState: ");
+  COMM.print(currentState ? "on" : "off");
+  COMM.print(", requested: ");
+  COMM.print(requestedState ? "on" : "off");
+  COMM.print(", since last: ");
+  COMM.print(timeSinceLastSwitch);
+  COMM.print(", pause: ");
+  COMM.print(minSwitchingPause);
+  COMM.println();
   delay(100);*/
   
   if (timeSinceLastSwitch < minSwitchingPause) {

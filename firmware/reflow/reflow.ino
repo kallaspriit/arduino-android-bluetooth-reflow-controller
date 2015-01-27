@@ -22,7 +22,7 @@ char commandStart = '<';
 char commandEnd = '>';
 
 // create serial stream for JSON
-aJsonStream serialStream(&SERIAL);
+aJsonStream serialStream(&COMM);
 
 // display renderer
 Adafruit_PCD8544 display = Adafruit_PCD8544(SCREEN_SCLK, SCREEN_MOSI, SCREEN_DC, SCREEN_SCE, SCREEN_RST);
@@ -118,8 +118,8 @@ void loop() {
   }
   
   // handle serial input
-  while (SERIAL.available() > 0) {
-    int input = SERIAL.read();
+  while (COMM.available() > 0) {
+    int input = COMM.read();
 
     if (input == commandStart) {
       command = "";
@@ -146,10 +146,10 @@ void processIntent(int intent) {
 }
 
 void processCommand(String command) {
-  if (command.substring(0, 1) == '{') {
+  if (command.substring(0, 1) == "{") {
     processJsonCommand(command);
   } else {
-    SERIAL.println("Unknown command: '" + command + "'"); 
+    COMM.println("Unknown command: '" + command + "'"); 
   }
 }
 
@@ -162,7 +162,7 @@ void processJsonCommand(String json) {
   aJsonObject* typeObj = aJson.getObjectItem(msg, "type");
   
   if (typeObj->type != aJson_String) {
-    SERIAL.println("Json command is missing type");
+    COMM.println("Json command is missing type");
     
     return; 
   }
@@ -176,7 +176,7 @@ void processJsonCommand(String json) {
 }
 
 void processRequest(String type, aJsonObject* data) {
-  SERIAL.println("Process request: " + type); 
+  COMM.println("Process request: " + type); 
   
   if (type == "get-pid") {
     // <{"type":"get-pid"}>
@@ -202,14 +202,14 @@ void processRequest(String type, aJsonObject* data) {
 void sendPid() {
   aJsonObject* msg = createPidMessage();
   aJson.print(msg, &serialStream);
-  SERIAL.println();
+  COMM.println();
   aJson.deleteItem(msg);
 }
 
 void sendStateChanged() {
   aJsonObject* msg = createStateChangedMessage();
   aJson.print(msg, &serialStream);
-  SERIAL.println();
+  COMM.println();
   aJson.deleteItem(msg);
 }
 
@@ -238,10 +238,12 @@ aJsonObject* createPidMessage() {
 }
 
 aJsonObject* createStateChangedMessage() {
-  char* stateName = "none";
+  const char* stateName;
   
   if (state != NULL) {
     stateName = state->getName(); 
+  } else {
+    stateName = "none"; 
   }
   
   aJsonObject* msg = aJson.createObject();
@@ -256,9 +258,9 @@ aJsonObject* createStateChangedMessage() {
 }
 
 void onKeyPress(int btn, unsigned long duration, boolean repeated) {
-  /*SERIAL.print("Pressed: ");
-  SERIAL.print(btn);
-  SERIAL.println(repeated ? " repeated" : " not repeated");*/
+  /*COMM.print("Pressed: ");
+  COMM.print(btn);
+  COMM.println(repeated ? " repeated" : " not repeated");*/
   
   if (state != NULL) {
     state->onKeyPress(btn, duration, repeated); 
@@ -266,11 +268,11 @@ void onKeyPress(int btn, unsigned long duration, boolean repeated) {
 }
 
 void onKeyRelease(int btn, unsigned long duration) {
-  //SERIAL.print("Released: ");
-  //SERIAL.print(btn);
-  //SERIAL.print(" after ");
-  //SERIAL.print(duration);
-  //SERIAL.println("ms");
+  //COMM.print("Released: ");
+  //COMM.print(btn);
+  //COMM.print(" after ");
+  //COMM.print(duration);
+  //COMM.println("ms");
   
   if (state != NULL) {
     state->onKeyRelease(btn, duration); 
@@ -278,8 +280,8 @@ void onKeyRelease(int btn, unsigned long duration) {
 }
 
 void onKeyDown(int btn) {
-  //SERIAL.print("DOWN: ");
-  //SERIAL.println(btn);
+  //COMM.print("DOWN: ");
+  //COMM.println(btn);
   
   if (state != NULL) {
     state->onKeyDown(btn); 
@@ -287,8 +289,8 @@ void onKeyDown(int btn) {
 }
 
 void onKeyUp(int btn) {
-  //SERIAL.print("UP: ");
-  //SERIAL.println(btn);
+  //COMM.print("UP: ");
+  //COMM.println(btn);
   
   if (state != NULL) {
     state->onKeyUp(btn); 

@@ -13,16 +13,17 @@
 
 MainMenuState::MainMenuState(Adafruit_PCD8544* display) :
   display(display),
-  items({
-    ACTION_START_REFLOW,
-    ACTION_PICK_PROFILE,
-    ACTION_SHOW_PROFILE,
-    ACTION_CONFIGURE_PID,
-    ACTION_LEARN,
-    ACTION_ABOUT
-  }),
-  menu(display, items, itemCount)
-{}
+  menu(display)
+{
+  items[0] = ACTION_START_REFLOW;
+  items[1] = ACTION_PICK_PROFILE;
+  items[2] = ACTION_SHOW_PROFILE;
+  items[3] = ACTION_CONFIGURE_PID;
+  items[4] = ACTION_LEARN;
+  items[5] = ACTION_ABOUT;
+  
+  menu.setItems(items, itemCount);
+}
 
 int MainMenuState::step(float dt) {
   display->clearDisplay();

@@ -4,7 +4,20 @@
 #include "Config.h"
 
 ReflowProfile::ReflowProfile() {
+  // timing
+  profile.timeMultiplier = 3.0f;
+  profile.preheatTime = 1.5f * 60.0f; // TODO use memory
+  profile.soakingTime = 1.5f * 60.0f;
+  profile.reflowTime = 1.5f * 60.0f;
+  profile.peakTime = 20;
+  profile.coolingTime = 2.0f * 60.0f;
   
+  // temperatures
+  profile.startTemp = PREHEAT_TEMPERATURE;
+  profile.preheatTemp = 150.0f;
+  profile.soakingTemp = 170.0f;
+  profile.reflowTemp = 240.0f;
+  profile.coolingTemp = 100.0f;
 }
 
 void ReflowProfile::init() {

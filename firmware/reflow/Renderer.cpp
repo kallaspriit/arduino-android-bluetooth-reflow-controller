@@ -20,6 +20,10 @@ void Renderer::renderTextCentered(int x, int y, String text, boolean large, int 
   display->print(text);
 }
 
+void Renderer::renderTextCentered(int x, int y, int number, boolean large, int color, int width) {
+  renderTextCentered(x, y, String(number), large, color, width);
+}
+
 void Renderer::renderProfile(int posX, int posY, int windowWidth, int windowHeight, int elapsed, ReflowProfile* profile, int* realTemperatures) {
   float pixelsPerSecond = (float)windowWidth / (float)profile->getTotalTime();
   float pixelsPerDegree = (float)windowHeight / (float)profile->getReflowTemp();

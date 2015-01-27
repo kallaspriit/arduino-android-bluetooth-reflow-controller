@@ -5,7 +5,7 @@
 #include "Adafruit_GFX.h"
 #include "Adafruit_PCD8544.h"
 
-ConfigurePidState::ConfigurePidState(Adafruit_PCD8544* display, PID* pid) : display(display), renderer(display), pid(pid) {}
+ConfigurePidState::ConfigurePidState(Adafruit_PCD8544* display, PID* pid) : display(display), pid(pid), renderer(display) {}
 
 int ConfigurePidState::step(float dt) {
   display->clearDisplay();

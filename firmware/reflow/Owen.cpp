@@ -67,8 +67,8 @@ void Owen::step(float dt) {
       
       timeSinceLastControl = 0.0f;
       
-      //SERIAL.print("Relay connected: ");
-      //SERIAL.println(relay.isConnected() ? "yes" : "no");
+      //COMM.print("Relay connected: ");
+      //COMM.println(relay.isConnected() ? "yes" : "no");
     }
   } else {
     setHeaterOn(false);
@@ -87,23 +87,23 @@ void Owen::step(float dt) {
     simulate(dt); 
   }
   
-  /*SERIAL.print("current: ");
-  SERIAL.print(getTemperature());
-  SERIAL.print(", target: ");
-  SERIAL.print(targetTemperature);
-  SERIAL.print(", speed: ");
-  SERIAL.print(simulatedHeaterSpeed);
-  SERIAL.print(", pid: ");
-  SERIAL.print(pidValue);
-  SERIAL.print(", enabled: ");
-  SERIAL.print(enabled ? "yes" : "no");
-  SERIAL.print(", simulation: ");
-  SERIAL.print(simulationMode ? "yes" : "no");
-  SERIAL.print(", should heat: ");
-  SERIAL.print(heaterOn ? "yes" : "no");
-  SERIAL.print(", relay connected: ");
-  SERIAL.print(relay.isConnected() ? "yes" : "no");
-  SERIAL.println();
+  /*COMM.print("current: ");
+  COMM.print(getTemperature());
+  COMM.print(", target: ");
+  COMM.print(targetTemperature);
+  COMM.print(", speed: ");
+  COMM.print(simulatedHeaterSpeed);
+  COMM.print(", pid: ");
+  COMM.print(pidValue);
+  COMM.print(", enabled: ");
+  COMM.print(enabled ? "yes" : "no");
+  COMM.print(", simulation: ");
+  COMM.print(simulationMode ? "yes" : "no");
+  COMM.print(", should heat: ");
+  COMM.print(heaterOn ? "yes" : "no");
+  COMM.print(", relay connected: ");
+  COMM.print(relay.isConnected() ? "yes" : "no");
+  COMM.println();
   delay(100);*/
 }
 
