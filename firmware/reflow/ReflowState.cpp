@@ -6,7 +6,7 @@
 
 #include <Adafruit_GFX.h>
 #include <Adafruit_PCD8544.h>
-#include <aJSON.h>
+//#include <aJSON.h>
 
 ReflowState::ReflowState(Adafruit_PCD8544* display, Owen* owen, ReflowProfile* profile) :
   display(display),
@@ -215,13 +215,13 @@ void ReflowState::onKeyPress(int btn, unsigned long duration, boolean repeated) 
   }
 }
 
-aJsonObject* ReflowState::getStateInfo() {
+/*aJsonObject* ReflowState::getStateInfo() {
   aJsonObject* msg = aJson.createObject();
   aJsonObject* data = aJson.createObject();
   
-  /*aJson.addNumberToObject(data, "p", owen->getPID()->profile.p);
+  *aJson.addNumberToObject(data, "p", owen->getPID()->profile.p);
   aJson.addNumberToObject(data, "i", owen->getPID()->profile.i);
-  aJson.addNumberToObject(data, "d", owen->getPID()->profile.d);*/
+  aJson.addNumberToObject(data, "d", owen->getPID()->profile.d);*
   aJson.addNumberToObject(data, "duration", stateInfo.duration);
   aJson.addBooleanToObject(data, "reflowing", stateInfo.reflowing);
   aJson.addNumberToObject(data, "currentTemperature", stateInfo.currentTemperature);
@@ -231,5 +231,5 @@ aJsonObject* ReflowState::getStateInfo() {
   aJson.addItemToObject(msg, "data", data);
 
   return msg;
-}
+}*/
 

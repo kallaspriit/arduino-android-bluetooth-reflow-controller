@@ -1,6 +1,6 @@
 // board version selection
-#define REFLOW_BOARD_V1
-//#define REFLOW_BOARD_V2
+//#define REFLOW_BOARD_V1
+#define REFLOW_BOARD_V2
 
 #if defined(REFLOW_BOARD_V1)
   // thermocouple
@@ -16,26 +16,36 @@
   #define SCREEN_RST 15  // reset
   
   // buttons
+  #define BTN_PIN_MODE INPUT_PULLUP
+  #define BTN_PRESSED_LEVEL LOW
   #define BTN_UP 17
   #define BTN_SELECT 18
   #define BTN_DOWN 19
+  
+  // eeprom
+  #define EEPROM_USABLE_SIZE 2048
 #elif defined(REFLOW_BOARD_V2)
   // thermocouple
-  #define THERMO_DO 12   // data
-  #define THERMO_CS 10   // chip-select
-  #define THRERMO_CLK 13 // clock
+  #define THERMO_DO MISO   // data
+  #define THERMO_CS SS   // chip-select
+  #define THRERMO_CLK SCL // clock
   
   // PCD8544 Nokia screen
-  #define SCREEN_SCLK PCINT1 // clock
-  #define SCREEN_MOSI PCINT2 // data out
+  #define SCREEN_SCLK SCK // clock
+  #define SCREEN_MOSI MOSI // data out
   #define SCREEN_DC 8   // data/command select
   #define SCREEN_SCE 4  // chip select
   #define SCREEN_RST 7  // reset
   
   // buttons
-  #define BTN_UP A0
+  #define BTN_PIN_MODE INPUT_PULLUP
+  #define BTN_PRESSED_LEVEL LOW
+  #define BTN_UP A2
   #define BTN_SELECT A1
-  #define BTN_DOWN A2
+  #define BTN_DOWN A0
+  
+  // eeprom
+  #define EEPROM_USABLE_SIZE 1024
 #endif
 
 // relay
@@ -64,8 +74,8 @@
 #define SIMULATION_MAX_COOLING_SPEED -1.5f
 
 // choose which serial to use - "Serial" for debugging, "Serial1" for bluetooth
-//#define SERIAL Serial
-#define COMM Serial1
+#define COMM Serial
+//#define COMM Serial1
 
 // intents
 #define INTENT_NONE 0

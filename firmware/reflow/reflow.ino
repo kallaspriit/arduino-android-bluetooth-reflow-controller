@@ -12,7 +12,7 @@
 #include <Adafruit_PCD8544.h>
 #include <Adafruit_MAX31855.h>
 #include <EEPROMex.h>
-#include <aJSON.h>
+//#include <aJSON.h>
 
 // runtime information
 State* state = NULL;
@@ -22,7 +22,7 @@ char commandStart = '<';
 char commandEnd = '>';
 
 // create serial stream for JSON
-aJsonStream serialStream(&COMM);
+//aJsonStream serialStream(&COMM);
 
 // display renderer
 Adafruit_PCD8544 display = Adafruit_PCD8544(SCREEN_SCLK, SCREEN_MOSI, SCREEN_DC, SCREEN_SCE, SCREEN_RST);
@@ -35,7 +35,7 @@ Owen owen = Owen();
 
 // states
 MainMenuState mainMenuState = MainMenuState(&display);
-ReflowState reflowState = ReflowState(&display, &owen, &profile);
+//ReflowState reflowState = ReflowState(&display, &owen, &profile); // TODO restore
 ConfigurePidState configurePidState = ConfigurePidState(&display, owen.getPID());
 
 // buttons
@@ -47,21 +47,22 @@ int buttonCount = 3;
 
 void setup() {
   // setup serial
-  Serial1.begin(9600);
+  COMM.begin(9600);
   
   // buttons
-  pinMode(BTN_UP, INPUT_PULLUP);
-  pinMode(BTN_SELECT, INPUT_PULLUP);
-  pinMode(BTN_DOWN, INPUT_PULLUP);
+  pinMode(BTN_UP, BTN_PIN_MODE);
+  pinMode(BTN_SELECT, BTN_PIN_MODE);
+  pinMode(BTN_DOWN, BTN_PIN_MODE);
   
   // setup display
   display.begin();
   display.setContrast(55);
   display.clearDisplay();
+  display.drawPixel(10, 10, BLACK); // XXX
   display.display();
   
   // initialize eeprom
-  EEPROM.setMemPool(0, EEPROMSizeUno);
+  EEPROM.setMemPool(0, EEPROM_USABLE_SIZE);
   
   // initialize the reflow profile
   profile.init();
@@ -86,7 +87,7 @@ void loop() {
     boolean repeated = false;
     
     // repeat button presses if held down
-    if (buttons[i].read() == LOW && duration > BTN_REPEAT_INTERVAL) {
+    if (buttons[i].read() == BTN_PRESSED_LEVEL && duration > BTN_REPEAT_INTERVAL) {
        buttons[i].rebounce(BTN_REPEAT_INTERVAL);
        repeated = true;
     }
@@ -101,7 +102,7 @@ void loop() {
     }
     
     // detect whether button is held down
-    if (buttons[i].read() == LOW) {
+    if (buttons[i].read() == BTN_PRESSED_LEVEL) {
       onKeyDown(buttons[i].pin);
     } else {
       onKeyUp(buttons[i].pin);
@@ -138,21 +139,24 @@ void loop() {
 void processIntent(int intent) {
   if (intent == INTENT_MAIN_MENU) {
     setState(mainMenuState);
-  } else if (intent == INTENT_START_REFLOW) {
+  }/* else if (intent == INTENT_START_REFLOW) { // TODO restore
     setState(reflowState);
-  } else if (intent == INTENT_CONFIGURE_PID) {
+  }*/ else if (intent == INTENT_CONFIGURE_PID) {
     setState(configurePidState);
   }
 }
 
 void processCommand(String command) {
   if (command.substring(0, 1) == "{") {
-    processJsonCommand(command);
+    // TODO restore
+    //processJsonCommand(command);
   } else {
     COMM.println("Unknown command: '" + command + "'"); 
   }
 }
 
+// TODO restore
+/*
 void processJsonCommand(String json) {
   const int bufSize = 256;
   char buf[bufSize];
@@ -212,7 +216,7 @@ void sendStateChanged() {
   COMM.println();
   aJson.deleteItem(msg);
 }
-
+*/
 void setPid(float p, float i, float d) {
   owen.getPID()->profile.p = p;
   owen.getPID()->profile.i = i;
@@ -220,10 +224,12 @@ void setPid(float p, float i, float d) {
   
   owen.getPID()->save();
   
-  sendPid();
+  // TODO restore
+  //sendPid();
 }
 
-aJsonObject* createPidMessage() {
+// TODO restore
+/*aJsonObject* createPidMessage() {
   aJsonObject* msg = aJson.createObject();
   aJsonObject* data = aJson.createObject();
   
@@ -255,7 +261,7 @@ aJsonObject* createStateChangedMessage() {
   aJson.addItemToObject(msg, "data", data);
 
   return msg;
-}
+}*/
 
 void onKeyPress(int btn, unsigned long duration, boolean repeated) {
   /*COMM.print("Pressed: ");
@@ -306,5 +312,6 @@ void setState(State& newState) {
   
   state = &newState;
   
-  sendStateChanged();
+  // TODO restore
+  //sendStateChanged();
 }

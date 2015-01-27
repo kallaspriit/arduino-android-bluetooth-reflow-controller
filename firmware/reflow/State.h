@@ -4,7 +4,7 @@
 #include "Arduino.h"
 #include "Config.h"
 
-class aJsonObject;
+//class aJsonObject;
 
 class State {
 
@@ -18,7 +18,7 @@ public:
   virtual void onKeyDown(int btn) {}
   virtual void onKeyUp(int btn) {}
   
-  virtual aJsonObject* getStateInfo() { return NULL; };
+  //virtual aJsonObject* getStateInfo() { return NULL; };
   
   virtual void setIntent(int intent);
   virtual int popLastIntent();

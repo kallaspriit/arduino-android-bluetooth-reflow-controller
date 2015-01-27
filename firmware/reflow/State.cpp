@@ -1,6 +1,6 @@
 #include "State.h"
 #include "Config.h"
-#include <aJSON.h>
+//#include <aJSON.h>
 
 void State::setIntent(int intent) {
   this->intent = intent;
@@ -15,7 +15,8 @@ int State::popLastIntent() {
 }
 
 void State::sendStateInfo() {
-  aJsonObject* msg = getStateInfo();
+  // TODO restore
+  /*aJsonObject* msg = getStateInfo();
   
   if (msg == NULL) {
     return; 
@@ -25,5 +26,5 @@ void State::sendStateInfo() {
   
   aJson.print(msg, &serialStream);
   COMM.println();
-  aJson.deleteItem(msg); 
+  aJson.deleteItem(msg); */
 }

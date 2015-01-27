@@ -29,7 +29,8 @@ public:
   void onExit();
   void onKeyPress(int btn, unsigned long duration, boolean repeated);
   
-  aJsonObject* getStateInfo();
+  // TODO restore
+  //aJsonObject* getStateInfo();
   
 private:
   void renderTemperatures(int sensorTemp, int targetTemp);
