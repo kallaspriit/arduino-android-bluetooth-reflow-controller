@@ -1,0 +1,24 @@
+#######################################
+# Syntax Coloring Map For Ethernet
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+Commander	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+gotCommand	KEYWORD2
+parseCommand	KEYWORD2
+command		KEYWORD2
+parameters	KEYWORD2
+parameterCount	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
