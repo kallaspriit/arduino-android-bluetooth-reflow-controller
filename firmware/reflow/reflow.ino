@@ -56,9 +56,9 @@ void setup() {
   
   // setup display
   display.begin();
-  display.setContrast(55);
+  display.setContrast(53);
   display.clearDisplay();
-  display.drawPixel(10, 10, BLACK); // XXX
+  //display.setRotation(2);
   display.display();
   
   // initialize eeprom
