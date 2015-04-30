@@ -1,13 +1,21 @@
-Output: NC Drill Files
-Type  : NC Drill
-From  : Project [Reflow.PrjPcb]
-   Generated File[reflow-RoundHoles.TXT]
-   Generated File[reflow-SlotHoles.TXT]
-   Generated File[reflow.LDP]
-   Generated File[reflow.DRR]
+Output: Gerber Files
+Type  : Gerber
+From  : Variant [[No Variations]] of Project [Reflow.PrjPcb]
+   Generated File[reflow.GTL]
+   Generated File[reflow.GBL]
+   Generated File[reflow.GTO]
+   Generated File[reflow.GTS]
+   Generated File[reflow.GBS]
+   Generated File[reflow.GBO]
+   Generated File[reflow.GM1]
+   Generated File[reflow.GD1]
+   Generated File[reflow.GG1]
+   Generated File[reflow.RUL]
+   Generated File[reflow.EXTREP]
+   Generated File[reflow.REP]
 
 
-Files Generated   : 4
+Files Generated   : 12
 Documents Printed : 0
 
-Finished Output Generation At 20:27:46 On 3.02.2015
+Finished Output Generation At 22:32:30 On 5.03.2015

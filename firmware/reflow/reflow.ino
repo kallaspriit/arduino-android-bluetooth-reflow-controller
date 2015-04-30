@@ -264,9 +264,9 @@ aJsonObject* createStateChangedMessage() {
 }*/
 
 void onKeyPress(int btn, unsigned long duration, boolean repeated) {
-  /*COMM.print("Pressed: ");
+  COMM.print("Pressed: ");
   COMM.print(btn);
-  COMM.println(repeated ? " repeated" : " not repeated");*/
+  COMM.println(repeated ? " repeated" : " not repeated");
   
   if (state != NULL) {
     state->onKeyPress(btn, duration, repeated); 
